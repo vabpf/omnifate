@@ -1,0 +1,6 @@
+{
+  "name": "OmniFate",
+  "description": "Cổng thông tin Huyền học Toàn diện kết hợp Đông-Tây: Thần số học, Chiêm tinh, Bản đồ sao, Tử vi, Bát tự, và Human Design tích hợp AI luận giải.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
