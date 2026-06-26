@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { NumerologyData } from '../types';
+import { useState, useEffect } from 'react';
+import { NumerologyData, UserProfile } from '../types';
 import { HelpCircle, Star, Sparkles, BookOpen, Compass, Award, Activity } from 'lucide-react';
-import Markdown from 'react-markdown';
+import NumerologyPartSection from './NumerologyPartSection';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface NumerologyViewerProps {
   data: NumerologyData;
+  profile: UserProfile;
   aiInterpretation?: {
     lifePathInterpretation: string;
     destinyInterpretation: string;
@@ -40,11 +42,65 @@ const ARROWS = [
   { name: 'Mũi tên Trí Tuệ (3-6-9)', cells: [3, 6, 9], desc: 'Óc sáng tạo dồi dào, tư duy logic, tiếp thu kiến thức khoa học học thuật xuất sắc.' },
 ];
 
-export default function NumerologyViewer({ data, aiInterpretation }: NumerologyViewerProps) {
+export default function NumerologyViewer({ data, aiInterpretation, profile }: NumerologyViewerProps) {
   const [selectedCell, setSelectedCell] = useState<number | null>(null);
   const [activePartTab, setActivePartTab] = useState<'A' | 'B' | 'C' | 'D'>('A');
   const [showDetailed, setShowDetailed] = useState<boolean>(false);
   const [showNoAiPrompt, setShowNoAiPrompt] = useState<boolean>(false);
+
+  const [localPartA, setLocalPartA] = useState<string | null>(null);
+  const [localPartB, setLocalPartB] = useState<string | null>(null);
+  const [localPartC, setLocalPartC] = useState<string | null>(null);
+  const [localPartD, setLocalPartD] = useState<string | null>(null);
+
+  const [isLoadingPart, setIsLoadingPart] = useState<{ [key: string]: boolean }>({});
+  const [errorPart, setErrorPart] = useState<{ [key: string]: string | null }>({});
+
+  // Sync with global report if available
+  useEffect(() => {
+    setLocalPartA(aiInterpretation?.partA_Overview || null);
+    setLocalPartB(aiInterpretation?.partB_LifePath || null);
+    setLocalPartC(aiInterpretation?.partC_Destiny || null);
+    setLocalPartD(aiInterpretation?.partD_Ability || null);
+  }, [aiInterpretation]);
+
+  const handleGeneratePart = async (part: 'A' | 'B' | 'C' | 'D') => {
+    setIsLoadingPart(prev => ({ ...prev, [part]: true }));
+    setErrorPart(prev => ({ ...prev, [part]: null }));
+
+    try {
+      const response = await fetch('/api/numerology-part', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: profile.name,
+          dob: profile.dob,
+          gender: profile.gender,
+          numData: data,
+          part,
+        }),
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || `Lỗi không thể giải đoán phần ${part}.`);
+      }
+
+      const resData = await response.json();
+      const content = resData.content;
+
+      if (part === 'A') setLocalPartA(content);
+      else if (part === 'B') setLocalPartB(content);
+      else if (part === 'C') setLocalPartC(content);
+      else if (part === 'D') setLocalPartD(content);
+
+    } catch (e: any) {
+      console.error(e);
+      setErrorPart(prev => ({ ...prev, [part]: e.message || 'Không thể liên lạc với hệ thống giải đoán AI lúc này.' }));
+    } finally {
+      setIsLoadingPart(prev => ({ ...prev, [part]: false }));
+    }
+  };
 
   const chartLayout = [
     [3, 6, 9],
@@ -211,10 +267,6 @@ export default function NumerologyViewer({ data, aiInterpretation }: NumerologyV
                 type="button"
                 id="btn-toggle-detailed-numerology-arrows"
                 onClick={() => {
-                  if (!aiInterpretation) {
-                    setShowNoAiPrompt(!showNoAiPrompt);
-                    return;
-                  }
                   setShowDetailed(!showDetailed);
                   if (!showDetailed) {
                     setTimeout(() => {
@@ -226,10 +278,7 @@ export default function NumerologyViewer({ data, aiInterpretation }: NumerologyV
               >
                 <Sparkles className="w-4 h-4 text-purple-200" />
                 <span>
-                  {aiInterpretation 
-                    ? (showDetailed ? 'ẨN BẢO CÁO CHI TIẾT' : 'LUẬN GIẢI CHI TIẾT 29 MỤC Thần Số Học')
-                    : 'XEM LUẬN GIẢI CHI TIẾT 29 MỤC Thần Số Học'
-                  }
+                  {showDetailed ? 'ẨN BẢO CÁO CHI TIẾT Thần Số Học' : 'LUẬN GIẢI CHI TIẾT TỪNG MỤC THẦN SỐ HỌC (AI)'}
                 </span>
               </button>
             </div>
@@ -274,11 +323,15 @@ export default function NumerologyViewer({ data, aiInterpretation }: NumerologyV
               <div className="space-y-4 text-xs leading-relaxed text-slate-300">
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1 text-[11px]">Đường đời ({data.lifePath}):</h5>
-                  <p className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-350">{aiInterpretation.lifePathInterpretation}</p>
+                  <div className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-350">
+                    <MarkdownRenderer content={aiInterpretation.lifePathInterpretation} theme="purple" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1 text-[11px]">Sứ mệnh ({data.destiny}):</h5>
-                  <p className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-350">{aiInterpretation.destinyInterpretation}</p>
+                  <div className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-350">
+                    <MarkdownRenderer content={aiInterpretation.destinyInterpretation} theme="purple" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -288,7 +341,7 @@ export default function NumerologyViewer({ data, aiInterpretation }: NumerologyV
       </div>
 
       {/* DETAILED 29-POINT NUMEROLOGY ANALYSIS */}
-      {aiInterpretation && showDetailed && (
+      {showDetailed && (
         <div id="numerology-detailed-analysis" className="glass-card rounded-2xl p-6 md:p-8 space-y-6 hover:translate-y-0 relative overflow-hidden transition-all border-purple-900/10 animate-fade-in">
           <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-gradient-to-bl from-purple-500/5 to-transparent pointer-events-none rounded-full blur-3xl" />
           
@@ -338,121 +391,53 @@ export default function NumerologyViewer({ data, aiInterpretation }: NumerologyV
 
           {/* TAB WINDOW CONTENT */}
           <div className="bg-black/40 rounded-2xl border border-white/5 p-6 min-h-[300px] relative">
-            {activePartTab === 'A' && (
-              <div className="space-y-4 animate-fade-in">
-                {aiInterpretation.partA_Overview ? (
-                  <div className="markdown-body">
-                    <Markdown
-                      components={{
-                        h1: ({ children }) => <h1 className="text-lg font-bold text-amber-400 mt-4 mb-2 font-display uppercase tracking-wide border-b border-white/10 pb-1">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-base font-semibold text-purple-300 mt-4 mb-2 font-display">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-sm font-semibold text-indigo-300 mt-3 mb-1 font-display">{children}</h3>,
-                        h4: ({ children }) => <h4 className="text-xs font-bold text-teal-300 mt-2 mb-1">{children}</h4>,
-                        p: ({ children }) => <p className="text-xs text-slate-300 leading-relaxed mb-3">{children}</p>,
-                        ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ol>,
-                        li: ({ children }) => <li className="text-xs text-slate-300">{children}</li>,
-                        blockquote: ({ children }) => <blockquote className="border-l-3 border-purple-500 pl-3 italic text-xs my-3 text-slate-400 bg-purple-950/20 py-1.5 rounded-r-md">{children}</blockquote>,
-                        strong: ({ children }) => <strong className="font-bold text-amber-200">{children}</strong>,
-                      }}
-                    >
-                      {aiInterpretation.partA_Overview}
-                    </Markdown>
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-slate-500 text-xs italic">
-                    Chưa có luận giải Phần A. Hãy chỉnh sửa thông tin hoặc bấm nút Luận Giải với AI ở đầu trang.
-                  </div>
-                )}
-              </div>
-            )}
+            {(() => {
+              const tabConfig = {
+                A: {
+                  title: 'Chưa Khởi Chạy Luận Giải Phần A',
+                  description: 'Phần này bao gồm: Chu kỳ 9 năm vận số, Dự đoán năm cá nhân hiện tại chi tiết (Sự nghiệp, Tài chính, Tình yêu, Gia đạo), và Nhóm ngành phù hợp theo sơ đồ Holland.',
+                  loadingText: 'Gemini đang khảo sát chu kỳ vận số & hướng nghiệp...',
+                  icon: Compass,
+                  content: localPartA,
+                },
+                B: {
+                  title: 'Chưa Khởi Chạy Luận Giải Phần B',
+                  description: 'Phần này bao gồm: Chi tiết con số Đường đời (Điểm mạnh, Góc khuất, Người nổi tiếng trùng tinh phách, độ tương hợp tình duyên, v.v.), 3 chu kỳ cuộc đời và Sơ đồ Kim tự tháp 4 đỉnh cao.',
+                  loadingText: 'Gemini đang giải đoán thế mạnh đường đời & bốn đỉnh cao kim tự tháp...',
+                  icon: BookOpen,
+                  content: localPartB,
+                },
+                C: {
+                  title: 'Chưa Khởi Chạy Luận Giải Phần C',
+                  description: 'Phần này bao gồm: Chỉ số sứ mệnh sâu sắc, Tương hợp Đường đời - Sứ mệnh, Chỉ số trưởng thành, Khao khát thầm kín của Linh hồn, Nhân cách phản chiếu và Bài học Nợ nghiệp lớn.',
+                  loadingText: 'Gemini đang phân rã chỉ số Sứ mệnh, Linh hồn & Nợ nghiệp nghiệp quả...',
+                  icon: Award,
+                  content: localPartC,
+                },
+                D: {
+                  title: 'Chưa Khởi Chạy Luận Giải Phần D',
+                  description: 'Phần này bao gồm: Luận giải cấu trúc Biểu đồ ngày sinh 3x3 (mũi tên sức mạnh & khuyết thiếu), Rung động tên gọi, Thái độ sống bẩm sinh, Chỉ số vượt khó (AQ) và xu hướng Năng lực tư duy.',
+                  loadingText: 'Gemini đang khảo sát biểu đồ sức mạnh ngày sinh & chỉ số vượt khó...',
+                  icon: Activity,
+                  content: localPartD,
+                },
+              }[activePartTab];
 
-            {activePartTab === 'B' && (
-              <div className="space-y-4 animate-fade-in">
-                {aiInterpretation.partB_LifePath ? (
-                  <div className="markdown-body">
-                    <Markdown
-                      components={{
-                        h1: ({ children }) => <h1 className="text-lg font-bold text-amber-400 mt-4 mb-2 font-display uppercase tracking-wide border-b border-white/10 pb-1">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-base font-semibold text-purple-300 mt-4 mb-2 font-display">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-sm font-semibold text-indigo-300 mt-3 mb-1 font-display">{children}</h3>,
-                        h4: ({ children }) => <h4 className="text-xs font-bold text-teal-300 mt-2 mb-1">{children}</h4>,
-                        p: ({ children }) => <p className="text-xs text-slate-300 leading-relaxed mb-3">{children}</p>,
-                        ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ol>,
-                        li: ({ children }) => <li className="text-xs text-slate-300">{children}</li>,
-                        blockquote: ({ children }) => <blockquote className="border-l-3 border-purple-500 pl-3 italic text-xs my-3 text-slate-400 bg-purple-950/20 py-1.5 rounded-r-md">{children}</blockquote>,
-                        strong: ({ children }) => <strong className="font-bold text-amber-200">{children}</strong>,
-                      }}
-                    >
-                      {aiInterpretation.partB_LifePath}
-                    </Markdown>
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-slate-500 text-xs italic">
-                    Chưa có luận giải Phần B. Hãy chỉnh sửa thông tin hoặc bấm nút Luận Giải với AI ở đầu trang.
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activePartTab === 'C' && (
-              <div className="space-y-4 animate-fade-in">
-                {aiInterpretation.partC_Destiny ? (
-                  <div className="markdown-body">
-                    <Markdown
-                      components={{
-                        h1: ({ children }) => <h1 className="text-lg font-bold text-amber-400 mt-4 mb-2 font-display uppercase tracking-wide border-b border-white/10 pb-1">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-base font-semibold text-purple-300 mt-4 mb-2 font-display">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-sm font-semibold text-indigo-300 mt-3 mb-1 font-display">{children}</h3>,
-                        h4: ({ children }) => <h4 className="text-xs font-bold text-teal-300 mt-2 mb-1">{children}</h4>,
-                        p: ({ children }) => <p className="text-xs text-slate-300 leading-relaxed mb-3">{children}</p>,
-                        ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ol>,
-                        li: ({ children }) => <li className="text-xs text-slate-300">{children}</li>,
-                        blockquote: ({ children }) => <blockquote className="border-l-3 border-purple-500 pl-3 italic text-xs my-3 text-slate-400 bg-purple-950/20 py-1.5 rounded-r-md">{children}</blockquote>,
-                        strong: ({ children }) => <strong className="font-bold text-amber-200">{children}</strong>,
-                      }}
-                    >
-                      {aiInterpretation.partC_Destiny}
-                    </Markdown>
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-slate-500 text-xs italic">
-                    Chưa có luận giải Phần C. Hãy chỉnh sửa thông tin hoặc bấm nút Luận Giải với AI ở đầu trang.
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activePartTab === 'D' && (
-              <div className="space-y-4 animate-fade-in">
-                {aiInterpretation.partD_Ability ? (
-                  <div className="markdown-body">
-                    <Markdown
-                      components={{
-                        h1: ({ children }) => <h1 className="text-lg font-bold text-amber-400 mt-4 mb-2 font-display uppercase tracking-wide border-b border-white/10 pb-1">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-base font-semibold text-purple-300 mt-4 mb-2 font-display">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-sm font-semibold text-indigo-300 mt-3 mb-1 font-display">{children}</h3>,
-                        h4: ({ children }) => <h4 className="text-xs font-bold text-teal-300 mt-2 mb-1">{children}</h4>,
-                        p: ({ children }) => <p className="text-xs text-slate-300 leading-relaxed mb-3">{children}</p>,
-                        ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2 text-xs text-slate-350">{children}</ol>,
-                        li: ({ children }) => <li className="text-xs text-slate-300">{children}</li>,
-                        blockquote: ({ children }) => <blockquote className="border-l-3 border-purple-500 pl-3 italic text-xs my-3 text-slate-400 bg-purple-950/20 py-1.5 rounded-r-md">{children}</blockquote>,
-                        strong: ({ children }) => <strong className="font-bold text-amber-200">{children}</strong>,
-                      }}
-                    >
-                      {aiInterpretation.partD_Ability}
-                    </Markdown>
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-slate-500 text-xs italic">
-                    Chưa có luận giải Phần D. Hãy chỉnh sửa thông tin hoặc bấm nút Luận Giải với AI ở đầu trang.
-                  </div>
-                )}
-              </div>
-            )}
+              return (
+                <NumerologyPartSection
+                  key={activePartTab}
+                  partId={activePartTab}
+                  title={tabConfig.title}
+                  description={tabConfig.description}
+                  loadingText={tabConfig.loadingText}
+                  icon={tabConfig.icon}
+                  isLoading={isLoadingPart[activePartTab] || false}
+                  error={errorPart[activePartTab] || null}
+                  content={tabConfig.content}
+                  onGenerate={() => handleGeneratePart(activePartTab)}
+                />
+              );
+            })()}
           </div>
         </div>
       )}

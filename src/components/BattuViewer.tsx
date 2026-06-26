@@ -1,5 +1,6 @@
 import { BattuData } from '../types';
 import { HelpCircle, Star, Sparkles } from 'lucide-react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface BattuViewerProps {
   data: BattuData;
@@ -133,19 +134,27 @@ export default function BattuViewer({ data, aiInterpretation }: BattuViewerProps
               <div className="space-y-4 text-xs leading-relaxed text-slate-300 max-h-[170px] overflow-y-auto pr-1">
                 <div>
                   <h6 className="font-bold text-slate-200 mb-0.5">Phân Tích Thừa Thiếu Ngũ Hành:</h6>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.elementAnalysis}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.elementAnalysis} theme="amber" />
+                  </div>
                 </div>
                 <div>
                   <h6 className="font-bold text-slate-200 mb-0.5">Dụng Thần / Hỷ Thần trợ giúp (Vũ khí cát tinh):</h6>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5 text-emerald-300">{aiInterpretation.favourableElements}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.favourableElements} theme="emerald" />
+                  </div>
                 </div>
                 <div>
                   <h6 className="font-bold text-slate-200 mb-0.5">Kỵ Thần tránh né (Thế lực xung sát):</h6>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5 text-rose-300">{aiInterpretation.unfavourableElements}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.unfavourableElements} theme="rose" />
+                  </div>
                 </div>
                 <div>
                   <h6 className="font-bold text-slate-200 mb-0.5">Phương Pháp Cải Vận Trực Tiếp:</h6>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.advice}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.advice} theme="purple" />
+                  </div>
                 </div>
               </div>
             </div>

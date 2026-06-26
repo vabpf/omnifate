@@ -5,6 +5,11 @@ import AstrologyViewer from './components/AstrologyViewer';
 import TuViViewer from './components/TuViViewer';
 import BattuViewer from './components/BattuViewer';
 import HumanDesignViewer from './components/HumanDesignViewer';
+import AuthManager from './components/AuthManager';
+import LandingPage from './components/LandingPage';
+import LoadingState from './components/LoadingState';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from './lib/firebase';
 import {
   UserProfile,
   FateAnalysisReport,
@@ -43,10 +48,12 @@ const LOADING_MESSAGES = [
   'An bài 14 chính tinh và thần sát linh địa lá số Tử Vi 12 cung...',
   'Phép tính Bát Tự định vị hỷ kỵ thần ngũ hành năng lượng...',
   'Đang kết hoạt luân xa và lập định bodygraph Thiết Kế Nhân Dạng...',
-  'Đại sư trí tuệ nhân tạo Gemini đang gầy dựng và khâu kết lời phán...'
+  'Trí tuệ nhân tạo Gemini đang tổng hợp và phân tích bản mệnh...'
 ];
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'numerology' | 'astrology' | 'tuvi' | 'battu' | 'hd'>('overview');
   
@@ -62,6 +69,15 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
   const [errorText, setErrorText] = useState<string | null>(null);
+
+  // Track Firebase Authentication State
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (usr) => {
+      setCurrentUser(usr);
+      setAuthInitialized(true);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Load sample profile on startup so they see a beautiful preloaded dashboard instantly
   useEffect(() => {
@@ -132,7 +148,7 @@ export default function App() {
       setActiveTab('overview');
     } catch (e: any) {
       console.error(e);
-      setErrorText(e.message || 'Không thể liên lạc với Đại sư vũ trụ lúc này. Vui lòng kiểm tra API Key và thử lại.');
+      setErrorText(e.message || 'Không thể liên lạc với máy chủ AI lúc này. Vui lòng thử lại sau.');
     } finally {
       setIsLoading(false);
     }
@@ -141,6 +157,19 @@ export default function App() {
   const handlePrint = () => {
     window.print();
   };
+
+  if (!authInitialized) {
+    return (
+      <div className="min-h-screen bg-[#050614] flex flex-col items-center justify-center p-6 select-none relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#ffffff05_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <LoadingState text="ĐANG KHỞI TẠO OMNIFATE..." accentColor="purple" />
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <LandingPage />;
+  }
 
   return (
     <div className="min-h-screen text-slate-100 flex flex-col relative overflow-x-hidden">
@@ -164,10 +193,20 @@ export default function App() {
 
           <div className="flex items-center gap-3">
             {profile && (
-              <span className="hidden md:inline-flex items-center gap-1.5 text-xs glass-pill rounded-full px-3 py-1 text-slate-350">
+              <span className="hidden lg:inline-flex items-center gap-1.5 text-xs glass-pill rounded-full px-3 py-1 text-slate-350">
                 👤 Đang tra cứu: <strong className="text-slate-100">{profile.name}</strong>
               </span>
             )}
+            
+            <AuthManager 
+              currentProfile={profile} 
+              onSelectSavedProfile={(savedP) => {
+                handleRecalculate(savedP);
+                setAiReport(null);
+                setActiveTab('overview');
+              }} 
+            />
+
             <button
               id="btn-print-dossier"
               onClick={handlePrint}
@@ -183,30 +222,13 @@ export default function App() {
 
       {/* LOADING OVERLAY SCREEN */}
       {isLoading && (
-        <div className="fixed inset-0 bg-[#0a0b1e]/85 backdrop-blur-2xl z-50 flex flex-col items-center justify-center p-6 select-none animate-fade-in border border-white/5">
-          <div className="relative w-24 h-24 mb-8">
-            <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 animate-ping" />
-            <div className="absolute inset-0 rounded-full border-t-4 border-indigo-400 border-r-4 border-r-transparent animate-spin" />
-            <div className="absolute inset-3 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Sparkles className="w-8 h-8 text-amber-300 animate-pulse" />
-            </div>
-          </div>
-          
-          <div className="max-w-md text-center space-y-3">
-            <h3 className="font-display text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-400">
-              Khởi Tạo Bản Đồ Thiên Mệnh
-            </h3>
-            
-            {/* Cyclic Rotating comforting messages */}
-            <p className="text-sm text-slate-300 min-h-[40px] font-medium leading-relaxed italic animate-pulse-slow">
-              "{LOADING_MESSAGES[loadingMsgIdx]}"
-            </p>
-            
-            <p className="text-xs text-slate-400">
-              Tiến trình tính toán tích hợp sẽ hoàn tất trong giây lát...
-            </p>
-          </div>
-        </div>
+        <LoadingState 
+          text={LOADING_MESSAGES[loadingMsgIdx]} 
+          accentColor="indigo" 
+          isFullScreen 
+          title="Khởi Tạo Bản Đồ Thiên Mệnh"
+          subtext="Tiến trình tính toán tích hợp sẽ hoàn tất trong giây lát..."
+        />
       )}
 
       {/* MAIN CONTAINER */}
@@ -236,84 +258,35 @@ export default function App() {
           <section className="space-y-6 print:hidden">
             {/* Tab navigation list with active visual lines */}
             <div className="flex border-b border-white/5 overflow-x-auto scroller-hidden gap-1.5 pb-1">
-              <button
-                id="tab-overview"
-                onClick={() => setActiveTab('overview')}
-                className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
-                  activeTab === 'overview'
-                    ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                    : 'border-transparent text-slate-400 hover:text-slate-105 hover:bg-white/2'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Báo Cáo Đại Sư</span>
-                {aiReport && <span className="w-2 h-2 rounded-full bg-emerald-500" />}
-              </button>
-
-              <button
-                id="tab-numerology"
-                onClick={() => setActiveTab('numerology')}
-                className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
-                  activeTab === 'numerology'
-                    ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                    : 'border-transparent text-slate-400 hover:text-slate-105 hover:bg-white/2'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Thần Số Học</span>
-              </button>
-
-              <button
-                id="tab-astrology"
-                onClick={() => setActiveTab('astrology')}
-                className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
-                  activeTab === 'astrology'
-                    ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                    : 'border-transparent text-slate-400 hover:text-slate-105 hover:bg-white/2'
-                }`}
-              >
-                <Compass className="w-3.5 h-3.5" />
-                <span>Chiêm Tinh (Bản Đồ Sao)</span>
-              </button>
-
-              <button
-                id="tab-tuvi"
-                onClick={() => setActiveTab('tuvi')}
-                className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
-                  activeTab === 'tuvi'
-                    ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                    : 'border-transparent text-slate-400 hover:text-slate-105 hover:bg-white/2'
-                }`}
-              >
-                <Award className="w-3.5 h-3.5" />
-                <span>Lá Số Tử Vi</span>
-              </button>
-
-              <button
-                id="tab-battu"
-                onClick={() => setActiveTab('battu')}
-                className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
-                  activeTab === 'battu'
-                    ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                    : 'border-transparent text-slate-400 hover:text-slate-105 hover:bg-white/2'
-                }`}
-              >
-                <Activity className="w-3.5 h-3.5" />
-                <span>Bát Tự Ngũ Hành</span>
-              </button>
-
-              <button
-                id="tab-hd"
-                onClick={() => setActiveTab('hd')}
-                className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
-                  activeTab === 'hd'
-                    ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                    : 'border-transparent text-slate-400 hover:text-slate-105 hover:bg-white/2'
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Thiết Kế Nhân Dạng</span>
-              </button>
+              {[
+                { id: 'overview', name: 'Báo Cáo Đại Sư', icon: BookOpen, hasDot: true },
+                { id: 'numerology', name: 'Thần Số Học', icon: Layers },
+                { id: 'astrology', name: 'Chiêm Tinh (Bản Đồ Sao)', icon: Compass },
+                { id: 'tuvi', name: 'Lá Số Tử Vi', icon: Award },
+                { id: 'battu', name: 'Bát Tự Ngũ Hành', icon: Activity },
+                { id: 'hd', name: 'Thiết Kế Nhân Dạng', icon: FileText },
+              ].map((tab) => {
+                const TabIcon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    id={`tab-${tab.id}`}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
+                      isActive
+                        ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
+                        : 'border-transparent text-slate-400 hover:text-slate-100 hover:bg-white/2'
+                    }`}
+                  >
+                    <TabIcon className="w-3.5 h-3.5" />
+                    <span>{tab.name}</span>
+                    {tab.hasDot && aiReport && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {/* TAB CONTAINER SCREEN */}
@@ -338,10 +311,10 @@ export default function App() {
                       ) : (
                         <div className="space-y-4 text-sm leading-relaxed text-slate-300">
                           <p>
-                            Bạn chưa kích hoạt phân hệ <strong>Huyền học Đại sư luận soạn</strong>. Ở chế độ xem nhanh này, dĩ vãng sẽ được phác thảo qua việc phân tách riêng lẻ từng bộ môn trong các tab tương ứng (Thần số học, Bản đồ sao, Tử Vi, Bát tự, v.v.).
+                            Bạn chưa khởi chạy <strong>Bản luận giải chuyên sâu bằng AI</strong>. Ở chế độ xem nhanh này, bản mệnh của bạn sẽ được phác thảo qua việc phân tách riêng lẻ từng bộ môn trong các tab tương ứng (Thần số học, Bản đồ sao, Tử Vi, Bát tự, v.v.).
                           </p>
                           <p>
-                            Để có thể bóc tách sâu sự đối ẩm bản mệnh giao thoa giữa phương Đông (Tứ trụ, Ngũ hành, sao Tử Vi) và phương Tây (Luân xa Human design, Cung Hoàng đạo, Thần số tích cực), hãy nhấp vào nút <strong>"Khởi chạy vạn năng Đại sư"</strong> trong biểu mẫu gửi dữ liệu.
+                            Để có thể bóc tách sâu sự giao thoa bản mệnh giữa phương Đông (Tứ trụ, Ngũ hành, sao Tử Vi) và phương Tây (Luân xa Human design, Cung Hoàng đạo, Thần số học), hãy nhấp vào nút <strong>"Luận Giải Bản Mệnh (Tích Hợp AI)"</strong> trong biểu mẫu gửi dữ liệu.
                           </p>
                         </div>
                       )}
@@ -373,7 +346,7 @@ export default function App() {
                         ) : (
                           <div className="space-y-4 text-xs leading-relaxed text-slate-300">
                             <p>
-                              Đại sư cần liên kết thần thức để gầy dựng bảng cải vận riêng biệt. Dưới đây là khuyến nghị chung theo can ngày và cung mộc:
+                              Hệ thống cần phân tích bản mệnh bằng AI để thiết lập bảng cải vận riêng biệt. Dưới đây là khuyến nghị cơ bản tham khảo:
                             </p>
                             <div className="p-3 bg-black/25 border border-white/5 rounded-xl space-y-2">
                               <div>☘️ <strong>Màu sắc cát hanh:</strong> Xanh ngọc, Tía, Lam vũ.</div>
@@ -413,7 +386,7 @@ export default function App() {
               )}
 
               {activeTab === 'numerology' && (
-                <NumerologyViewer data={numData} aiInterpretation={aiReport?.numerology} />
+                <NumerologyViewer data={numData} aiInterpretation={aiReport?.numerology} profile={profile} />
               )}
 
               {activeTab === 'astrology' && (

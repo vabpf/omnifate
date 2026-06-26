@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile stored after registration.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The unique Firebase Authentication UID of the user."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of when the user registered."
+        }
+      },
+      "required": ["uid", "name", "email", "createdAt"]
+    },
+    "History": {
+      "title": "Lookup History",
+      "description": "Saved horoscopes or numerology profile lookups for the user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The owner's Firebase UID."
+        },
+        "profile": {
+          "type": "object",
+          "description": "The structured UserProfile content containing birth details.",
+          "properties": {
+            "name": { "type": "string" },
+            "dob": { "type": "string" },
+            "time": { "type": "string" },
+            "place": { "type": "string" },
+            "gender": { "type": "string" }
+          },
+          "required": ["name", "dob", "time", "place", "gender"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of when this lookup was saved."
+        }
+      },
+      "required": ["userId", "profile", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Individual user profiles accessible only by the owner."
+    },
+    "/history/{historyId}": {
+      "schema": "History",
+      "description": "Horoscopes and lookups saved by authenticated users."
+    }
+  }
+}

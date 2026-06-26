@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AstrologyData, PlanetPosition } from '../types';
 import { HelpCircle, Star, Compass } from 'lucide-react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface AstrologyViewerProps {
   data: AstrologyData;
@@ -293,19 +294,27 @@ export default function AstrologyViewer({ data, aiInterpretation }: AstrologyVie
               <div className="space-y-4 text-xs leading-relaxed text-slate-300 overflow-y-auto max-h-[300px] pr-1">
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Cung Mặt Trời ({data.sunSign}) - Tôi Luôn Cố Gắng:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.sunSignInterpretation}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.sunSignInterpretation} theme="indigo" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Cung Mặt Trăng ({data.moonSign}) - Cảm Xúc Sâu Kín:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.moonSignInterpretation}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.moonSignInterpretation} theme="indigo" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Cung Mọc ({data.ascendant}) - Lớp Vỏ Xã Hội:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.ascendantInterpretation}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.ascendantInterpretation} theme="indigo" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Hợp Nhất Toàn Diện Bản Đồ Sao:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.natalChartSynthesis}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.natalChartSynthesis} theme="indigo" />
+                  </div>
                 </div>
               </div>
             </div>

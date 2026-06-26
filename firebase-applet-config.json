@@ -1,0 +1,10 @@
+{
+  "projectId": "projectId",
+  "appId": "appId",
+  "apiKey": "apiKey",
+  "authDomain": "authDomain",
+  "storageBucket": "storageBucket",
+  "messagingSenderId": "messagingSenderId",
+  "measurementId": "measurementId",
+  "firestoreDatabaseId": ""
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TuViPalace } from '../types';
 import { Eye, Award, ShieldAlert, Sparkles } from 'lucide-react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface TuViViewerProps {
   palaces: TuViPalace[];
@@ -218,19 +219,27 @@ export default function TuViViewer({
               <div className="space-y-4 text-xs leading-relaxed text-slate-300 max-h-[220px] overflow-y-auto pr-1">
                 <div>
                   <h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1"><Eye className="w-3.5 h-3.5 text-indigo-400" /> Bản Tính & Cốt Cách:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.personality}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.personality} theme="purple" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1"><Award className="w-3.5 h-3.5 text-indigo-400" /> Con Đường Sự Nghiệp:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.career}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.career} theme="purple" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1"><ShieldAlert className="w-3.5 h-3.5 text-indigo-400" /> Tài Bạch & Dư Địa Tiền Tụ:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.wealth}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.wealth} theme="purple" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1">💖 Tình Duyên & Gia Đạo:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.love}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.love} theme="purple" />
+                  </div>
                 </div>
               </div>
             </div>

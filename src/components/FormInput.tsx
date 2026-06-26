@@ -272,7 +272,7 @@ export default function FormInput({ onSubmit, isLoading }: FormInputProps) {
             disabled={isLoading || !name || !dob || !place}
             className="flex-1 font-display glass-btn text-slate-200 hover:text-slate-100 rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-md active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            📊 Xem Đồ Hình Bản Đồ Tức Thí
+            📊 Lập Bản Đồ Bản Mệnh
           </button>
 
           {/* Master AI Synthesis synthesis report (Gemini Server API) */}
@@ -283,7 +283,7 @@ export default function FormInput({ onSubmit, isLoading }: FormInputProps) {
             disabled={isLoading || !name || !dob || !place}
             className="flex-[1.2] font-display glass-btn-active text-slate-100 rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            🎯 Khởi Chạy Đại Sư Luận Giải (Tích Hợp AI)
+            🔮 Luận Giải Bản Mệnh (Tích Hợp AI)
           </button>
         </div>
       </div>

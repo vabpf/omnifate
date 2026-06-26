@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { HumanDesignData, HumanDesignCenter } from '../types';
 import { HelpCircle, Star } from 'lucide-react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface HumanDesignViewerProps {
   data: HumanDesignData;
@@ -10,6 +11,18 @@ interface HumanDesignViewerProps {
     strategyInterpretation: string;
   };
 }
+
+const CENTER_SHAPES = [
+  { id: 'head', type: 'polygon', props: { points: '160,25 148,45 172,45' } },
+  { id: 'ajna', type: 'polygon', props: { points: '160,95 146,70 174,70' } },
+  { id: 'throat', type: 'rect', props: { x: '146', y: '108', width: '28', height: '24', rx: '3' } },
+  { id: 'g_center', type: 'rect', props: { x: '148', y: '157', width: '24', height: '24', rx: '4', transform: 'rotate(45, 160, 169)' } },
+  { id: 'heart', type: 'polygon', props: { points: '195,182 186,198 204,198' } },
+  { id: 'sacral', type: 'rect', props: { x: '145', y: '215', width: '30', height: '30', rx: '3' } },
+  { id: 'root', type: 'rect', props: { x: '144', y: '265', width: '32', height: '30', rx: '3' } },
+  { id: 'spleen', type: 'polygon', props: { points: '110,205 92,235 116,235' } },
+  { id: 'solar_plexus', type: 'polygon', props: { points: '210,205 202,235 226,235' } },
+];
 
 export default function HumanDesignViewer({ data, aiInterpretation }: HumanDesignViewerProps) {
   const [selectedCenter, setSelectedCenter] = useState<HumanDesignCenter | null>(null);
@@ -97,168 +110,32 @@ export default function HumanDesignViewer({ data, aiInterpretation }: HumanDesig
               <line x1="160" y1="230" x2="110" y2="220" stroke="rgba(255,255,255,0.2)" strokeWidth="2.5" />
               <line x1="160" y1="230" x2="210" y2="220" stroke="rgba(255,255,255,0.2)" strokeWidth="2.5" />
 
-              {/* 1. Head (Crown) - Triangle at (160, 40) */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'head')!;
-                const isSel = selectedCenter?.id === 'head';
-                return (
-                  <polygon
-                    id="node-hd-head"
-                    points="160,25 148,45 172,45"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
+              {/* Dynamic Bodygraph Centers */}
+              {CENTER_SHAPES.map((shape) => {
+                const center = data.centers.find(c => c.id === shape.id);
+                if (!center) return null;
+                const isSel = selectedCenter?.id === shape.id;
+                const fill = center.defined ? center.color : '#0F172A';
+                const fillOpacity = center.defined ? 0.9 : 0.6;
+                const stroke = isSel ? '#FFFFFF' : '#475569';
+                const strokeWidth = isSel ? 2 : 1;
+                const commonProps = {
+                  id: `node-hd-${shape.id}`,
+                  fill,
+                  fillOpacity,
+                  stroke,
+                  strokeWidth,
+                  className: "cursor-pointer transition hover:scale-105 origin-center",
+                  onClick: () => setSelectedCenter(center),
+                  ...shape.props,
+                };
 
-              {/* 2. Ajna - Triangle at (160, 80) */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'ajna')!;
-                const isSel = selectedCenter?.id === 'ajna';
-                return (
-                  <polygon
-                    id="node-hd-ajna"
-                    points="160,95 146,70 174,70"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 3. Throat - Square at (160, 120) */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'throat')!;
-                const isSel = selectedCenter?.id === 'throat';
-                return (
-                  <rect
-                    id="node-hd-throat"
-                    x="146" y="108" width="28" height="24" rx="3"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 4. G-Center - Diamond/square in center */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'g_center')!;
-                const isSel = selectedCenter?.id === 'g_center';
-                return (
-                  <rect
-                    id="node-hd-g_center"
-                    x="148" y="157" width="24" height="24" rx="4"
-                    transform="rotate(45, 160, 169)"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 5. Heart (Ego) - Small Triangle */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'heart')!;
-                const isSel = selectedCenter?.id === 'heart';
-                return (
-                  <polygon
-                    id="node-hd-heart"
-                    points="195,182 186,198 204,198"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 6. Sacral - Square */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'sacral')!;
-                const isSel = selectedCenter?.id === 'sacral';
-                return (
-                  <rect
-                    id="node-hd-sacral"
-                    x="145" y="215" width="30" height="30" rx="3"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 7. Root - Square at bottom */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'root')!;
-                const isSel = selectedCenter?.id === 'root';
-                return (
-                  <rect
-                    id="node-hd-root"
-                    x="144" y="265" width="32" height="30" rx="3"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 8. Spleen - Triangle Left */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'spleen')!;
-                const isSel = selectedCenter?.id === 'spleen';
-                return (
-                  <polygon
-                    id="node-hd-spleen"
-                    points="110,205 92,235 116,235"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
-
-              {/* 9. Solar Plexus - Triangle Right */}
-              {(() => {
-                const center = data.centers.find(c => c.id === 'solar_plexus')!;
-                const isSel = selectedCenter?.id === 'solar_plexus';
-                return (
-                  <polygon
-                    id="node-hd-solar_plexus"
-                    points="210,205 202,235 226,235"
-                    fill={center.defined ? center.color : '#0F172A'}
-                    fillOpacity={center.defined ? 0.9 : 0.6}
-                    stroke={isSel ? '#FFFFFF' : '#475569'}
-                    strokeWidth={isSel ? 2 : 1}
-                    className="cursor-pointer transition hover:scale-105"
-                    onClick={() => setSelectedCenter(center)}
-                  />
-                );
-              })()}
+                if (shape.type === 'polygon') {
+                  return <polygon key={shape.id} {...commonProps as any} />;
+                } else {
+                  return <rect key={shape.id} {...commonProps as any} />;
+                }
+              })}
             </svg>
           </div>
 
@@ -321,15 +198,21 @@ export default function HumanDesignViewer({ data, aiInterpretation }: HumanDesig
               <div className="space-y-4 text-xs leading-relaxed text-slate-300 overflow-y-auto max-h-[300px] pr-1">
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Loại Hào Quang ({data.type}) - Bản Chất Vận Hành:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.typeInterpretation}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.typeInterpretation} theme="teal" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Thẩm Quyền Đưa Quyết Định ({data.authority.split(' ')[0]}):</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.authorityInterpretation}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.authorityInterpretation} theme="teal" />
+                  </div>
                 </div>
                 <div>
                   <h5 className="font-bold text-slate-200 mb-1">Chiến Lược Hấp Dẫn Hào Quang:</h5>
-                  <p className="p-3 bg-black/40 rounded-xl border border-white/5">{aiInterpretation.strategyInterpretation}</p>
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                    <MarkdownRenderer content={aiInterpretation.strategyInterpretation} theme="teal" />
+                  </div>
                 </div>
               </div>
             </div>
