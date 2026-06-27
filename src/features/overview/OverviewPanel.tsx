@@ -18,11 +18,11 @@ export default function OverviewPanel({ aiReport, numData }: OverviewPanelProps)
         </div>
 
         {aiReport ? (
-          <div className="text-sm text-slate-300 leading-relaxed space-y-4 whitespace-pre-wrap font-sans">
+          <div className="text-sm text-white/60 leading-relaxed space-y-4 whitespace-pre-wrap font-sans">
             {aiReport.overview}
           </div>
         ) : (
-          <div className="space-y-4 text-sm leading-relaxed text-slate-300">
+          <div className="space-y-4 text-sm leading-relaxed text-white/60">
             <p>Bạn chưa khởi chạy <strong>Bản luận giải chuyên sâu bằng AI</strong>. Ở chế độ xem nhanh này, bản mệnh của bạn sẽ được phác thảo qua việc phân tách riêng lẻ từng bộ môn trong các tab tương ứng (Thần số học, Bản đồ sao, Tử Vi, Bát tự, v.v.).</p>
             <p>Để có thể bóc tách sâu sự giao thoa bản mệnh giữa phương Đông (Tứ trụ, Ngũ hành, sao Tử Vi) và phương Tây (Luân xa Human design, Cung Hoàng đạo, Thần số học), hãy nhấp vào nút <strong>"Luận Giải Bản Mệnh (Tích Hợp AI)"</strong> trong biểu mẫu gửi dữ liệu.</p>
           </div>
@@ -38,20 +38,20 @@ export default function OverviewPanel({ aiReport, numData }: OverviewPanelProps)
           {aiReport?.remediation ? (
             <div className="space-y-4 text-xs leading-relaxed">
               <div>
-                <span className="text-slate-400 font-mono uppercase block text-[9px]">Sắc màu trợ mệnh:</span>
-                <p className="text-slate-205 mt-1 font-bold p-2 bg-black/40 border border-white/5 rounded-lg">{aiReport.remediation.colors}</p>
+                <span className="text-white/40 font-mono uppercase block text-[9px]">Sắc màu trợ mệnh:</span>
+                <p className="text-warm-amber mt-1 font-bold p-2 bg-black/40 border border-white/5 rounded-lg">{aiReport.remediation.colors}</p>
               </div>
               <div>
-                <span className="text-slate-400 font-mono uppercase block text-[9px]">Tần số con số cát tinh:</span>
-                <p className="text-slate-205 mt-1 font-bold p-2 bg-black/40 border border-white/5 rounded-lg">{aiReport.remediation.numbers}</p>
+                <span className="text-white/40 font-mono uppercase block text-[9px]">Tần số con số cát tinh:</span>
+                <p className="text-warm-amber mt-1 font-bold p-2 bg-black/40 border border-white/5 rounded-lg">{aiReport.remediation.numbers}</p>
               </div>
               <div>
-                <span className="text-slate-400 font-mono uppercase block text-[9px]">Triết lý cốt tủy tu thân:</span>
-                <p className="text-slate-300 mt-1 p-2 bg-black/40 border border-white/5 rounded-lg italic">"{aiReport.remediation.mindsetShift}"</p>
+                <span className="text-white/40 font-mono uppercase block text-[9px]">Triết lý cốt tủy tu thân:</span>
+                <p className="text-white/60 mt-1 p-2 bg-black/40 border border-white/5 rounded-lg italic">"{aiReport.remediation.mindsetShift}"</p>
               </div>
             </div>
           ) : (
-            <div className="space-y-4 text-xs leading-relaxed text-slate-300">
+            <div className="space-y-4 text-xs leading-relaxed text-white/60">
               <p>Hệ thống cần phân tích bản mệnh bằng AI để thiết lập bảng cải vận riêng biệt. Dưới đây là khuyến nghị cơ bản tham khảo:</p>
               <div className="p-3 bg-black/25 border border-white/5 rounded-xl space-y-2">
                 <div>☘️ <strong>Màu sắc cát hanh:</strong> Xanh ngọc, Tía, Lam vũ.</div>
@@ -65,15 +65,15 @@ export default function OverviewPanel({ aiReport, numData }: OverviewPanelProps)
         <div className="mt-6 pt-4 border-t border-white/10">
           {aiReport?.yearlyForecast ? (
             <div className="space-y-3">
-              <span className="text-[9px] text-slate-400 font-mono uppercase block">Dự báo năm 2026 Bính Ngọ:</span>
-              <p className="text-[11px] text-slate-300 leading-relaxed font-sans">{aiReport.yearlyForecast.outlook}</p>
+              <span className="text-[9px] text-white/40 font-mono uppercase block">Dự báo năm 2026 Bính Ngọ:</span>
+              <p className="text-[11px] text-white/60 leading-relaxed font-sans">{aiReport.yearlyForecast.outlook}</p>
               <div className="grid grid-cols-2 gap-2 text-[10px] mt-1">
                 <div className="p-1.5 bg-emerald-950/20 text-emerald-305 border border-emerald-900/30 rounded">📈 Cơ hội: {aiReport.yearlyForecast.opportunities.substring(0, 40)}...</div>
                 <div className="p-1.5 bg-rose-950/20 text-rose-300 border border-rose-900/30 rounded">⚠️ Thách thức: {aiReport.yearlyForecast.challenges.substring(0, 40)}...</div>
               </div>
             </div>
           ) : (
-            <div className="text-[11px] text-slate-400 italic bg-black/20 p-2.5 rounded text-center border border-white/5 font-sans">
+            <div className="text-[11px] text-white/40 italic bg-black/20 p-2.5 rounded text-center border border-white/5 font-sans">
               Đang ở Chế độ xem biểu đồ bản mệnh nhanh. Hãy kích hoạt xem AI luận giải để mở phân hệ Dự báo cát hung tinh tế năm 2026.
             </div>
           )}

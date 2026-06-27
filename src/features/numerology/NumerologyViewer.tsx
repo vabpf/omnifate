@@ -94,31 +94,31 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-card p-5 relative overflow-hidden group hover:shadow-purple-500/10 border-purple-500/10 hover:border-purple-500/30">
-          <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-purple-500/10 select-none group-hover:scale-110 transition-transform">
+        <div className="glass-card rounded-2xl p-5 relative overflow-hidden group hover:shadow-warm-amber/10 border-warm-amber/10 hover:border-warm-amber/30">
+          <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-warm-amber/10 select-none group-hover:scale-110 transition-transform">
             {data.lifePath}
           </div>
-          <span className="text-xs text-purple-400 font-mono tracking-wider block uppercase">Chỉ Số Đường Đời (Life Path)</span>
-          <h4 className="text-3xl font-display font-bold text-slate-100 mt-1">{data.lifePath}</h4>
-          <p className="text-xs text-slate-400 mt-2 leading-relaxed">Mô tả hành trình nguyên bản lớn nhất, thế mạnh sẵn có và bài học tiến hóa tâm linh của bạn trong kiếp sống này.</p>
+          <span className="text-xs text-warm-amber font-mono tracking-wider block uppercase">Chỉ Số Đường Đời (Life Path)</span>
+          <h4 className="text-3xl font-display font-bold text-white mt-1">{data.lifePath}</h4>
+          <p className="text-xs text-white/40 mt-2 leading-relaxed">Mô tả hành trình nguyên bản lớn nhất, thế mạnh sẵn có và bài học tiến hóa tâm linh của bạn trong kiếp sống này.</p>
         </div>
 
-        <div className="glass-card p-5 relative overflow-hidden group hover:shadow-indigo-500/10 border-indigo-500/10 hover:border-indigo-500/30">
-          <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-indigo-500/10 select-none group-hover:scale-110 transition-transform">
+        <div className="glass-card rounded-2xl p-5 relative overflow-hidden group hover:shadow-warm-amber/10 border-warm-amber/10 hover:border-warm-amber/30">
+          <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-warm-amber/10 select-none group-hover:scale-110 transition-transform">
             {data.destiny}
           </div>
-          <span className="text-xs text-indigo-400 font-mono tracking-wider block uppercase">Chủ Chỉ Sứ Mệnh (Destiny)</span>
-          <h4 className="text-3xl font-display font-bold text-slate-100 mt-1">{data.destiny}</h4>
-          <p className="text-xs text-slate-400 mt-2 leading-relaxed">Được cấu thành từ làn sóng rung động họ tên khai sinh. Biệt đãi cho năng lượng phụng sự, tài năng nghề nghiệp lớn.</p>
+          <span className="text-xs text-warm-amber font-mono tracking-wider block uppercase">Chủ Chỉ Sứ Mệnh (Destiny)</span>
+          <h4 className="text-3xl font-display font-bold text-white mt-1">{data.destiny}</h4>
+          <p className="text-xs text-white/40 mt-2 leading-relaxed">Được cấu thành từ làn sóng rung động họ tên khai sinh. Biệt đãi cho năng lượng phụng sự, tài năng nghề nghiệp lớn.</p>
         </div>
 
-        <div className="glass-card p-5 relative overflow-hidden group hover:shadow-amber-500/10 border-amber-500/10 hover:border-amber-500/30">
+        <div className="glass-card rounded-2xl p-5 relative overflow-hidden group hover:shadow-amber-500/10 border-amber-500/10 hover:border-amber-500/30">
           <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-amber-500/10 select-none group-hover:scale-110 transition-transform">
             {data.soul}
           </div>
           <span className="text-xs text-amber-400 font-mono tracking-wider block uppercase">Nội tâm Linh hồn (Soul Urge)</span>
-          <h4 className="text-3xl font-display font-bold text-slate-100 mt-1">{data.soul}</h4>
-          <p className="text-xs text-slate-400 mt-2 leading-relaxed">Phản chiếu sâu kín khát vọng tinh tủy, món quà tinh thần tiềm thức mà linh hồn của bạn thực sự khao khát đạt đến.</p>
+          <h4 className="text-3xl font-display font-bold text-white mt-1">{data.soul}</h4>
+          <p className="text-xs text-white/40 mt-2 leading-relaxed">Phản chiếu sâu kín khát vọng tinh tủy, món quà tinh thần tiềm thức mà linh hồn của bạn thực sự khao khát đạt đến.</p>
         </div>
       </div>
 
@@ -126,11 +126,11 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
         <div className="glass-card rounded-2xl p-6 hover:translate-y-0">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="font-display text-lg font-bold text-slate-200">Biểu Đồ Ngày Sinh (Birth Grid Matrix)</h4>
-              <p className="text-xs text-slate-400 mt-0.5">Phỏng dựng phân bổ tinh vận bản thể của ngày sinh.</p>
+              <h4 className="font-display text-lg font-bold text-white/80">Biểu Đồ Ngày Sinh (Birth Grid Matrix)</h4>
+              <p className="text-xs text-white/40 mt-0.5">Phỏng dựng phân bổ tinh vận bản thể của ngày sinh.</p>
             </div>
             <span id="tooltip-help" title="Nhấp vào từng ô để tra cứu các chỉ số xuất hiện." className="tooltip">
-              <HelpCircle className="w-4 h-4 text-slate-500" />
+              <HelpCircle className="w-4 h-4 text-white/30" />
             </span>
           </div>
 
@@ -149,14 +149,14 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                       className={`relative flex flex-col justify-between p-3 rounded-xl border transition-all cursor-pointer ${
                         occurrences > 0
                           ? isSelected
-                            ? 'bg-purple-950/40 border-purple-400 shadow-md shadow-purple-500/20 text-slate-100'
-                            : 'bg-white/5 border-white/10 hover:border-white/20 text-slate-250 hover:bg-white/10'
+                            ? 'bg-warm-amber/10 border-warm-amber shadow-md shadow-warm-amber/20 text-white'
+                            : 'bg-white/5 border-white/10 hover:border-white/20 text-white/70 hover:bg-white/10'
                           : isSelected
-                            ? 'bg-black/40 border-white/15 text-slate-500'
-                            : 'bg-black/10 border-white/5 text-slate-700 hover:border-white/10 hover:bg-black/20'
+                            ? 'bg-black/40 border-white/15 text-white/30'
+                            : 'bg-black/10 border-white/5 text-white/20 hover:border-white/10 hover:bg-black/20'
                       }`}
                     >
-                      <span className="text-[10px] font-mono block text-slate-500">{cellNum}</span>
+                      <span className="text-[10px] font-mono block text-white/30">{cellNum}</span>
                       <div className="flex-1 flex items-center justify-center">
                         {occurrences > 0 ? (
                           <div className="flex flex-wrap gap-0.5 justify-center">
@@ -165,10 +165,10 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                             ))}
                           </div>
                         ) : (
-                          <span className="text-xs text-slate-700/60 leading-none">trống</span>
+                          <span className="text-xs text-white/20/60 leading-none">trống</span>
                         )}
                       </div>
-                      <span className="text-[10px] text-right font-mono text-slate-500">
+                      <span className="text-[10px] text-right font-mono text-white/30">
                         {occurrences > 0 ? `${occurrences} số` : '0'}
                       </span>
                     </button>
@@ -184,37 +184,37 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                 <h5 className="text-xs font-bold font-display text-amber-500 flex items-center gap-1.5 uppercase">
                   <span>✦</span> {CELL_INFO[selectedCell].title}
                 </h5>
-                <span className="text-[10px] text-purple-400 font-mono mt-1 block">Toạ độ ý thức: {CELL_INFO[selectedCell].element}</span>
-                <p className="text-xs text-slate-300 mt-2 leading-relaxed">{CELL_INFO[selectedCell].meaning}</p>
-                <div className="mt-3 text-[11px] bg-white/5 border border-white/5 px-3 py-1.5 rounded-lg text-slate-400">
-                  Thân chủ sở hữu: <span className="text-slate-200 font-bold font-mono">{data.birthGrid[selectedCell] || 0}</span> con số trong ngày sinh.
+                <span className="text-[10px] text-warm-amber font-mono mt-1 block">Toạ độ ý thức: {CELL_INFO[selectedCell].element}</span>
+                <p className="text-xs text-white/60 mt-2 leading-relaxed">{CELL_INFO[selectedCell].meaning}</p>
+                <div className="mt-3 text-[11px] bg-white/5 border border-white/5 px-3 py-1.5 rounded-lg text-white/40">
+                  Thân chủ sở hữu: <span className="text-white/80 font-bold font-mono">{data.birthGrid[selectedCell] || 0}</span> con số trong ngày sinh.
                 </div>
               </div>
             ) : (
-              <div className="text-center py-6 text-xs text-slate-500 italic">Nhấp vào bất kỳ ô số nào trong 3x3 ngày sinh ở trên để hiển thị diễn giải chi tiết.</div>
+              <div className="text-center py-6 text-xs text-white/30 italic">Nhấp vào bất kỳ ô số nào trong 3x3 ngày sinh ở trên để hiển thị diễn giải chi tiết.</div>
             )}
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="glass-card hover:translate-y-0 rounded-2xl p-6">
-            <h4 className="font-display text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
+            <h4 className="font-display text-lg font-bold text-white/80 mb-3 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-400" />Các Trục Mũi Tên Tính Cách
             </h4>
-            <p className="text-xs text-slate-400 leading-relaxed mb-4">Mũi tên thế mạnh (khi có đủ 3 số thẳng hàng) và mũi tên khoảng trống (khi khuyết mất 3 số kề cận) bộc lộ hành vi phản ứng tự nhiên.</p>
+            <p className="text-xs text-white/40 leading-relaxed mb-4">Mũi tên thế mạnh (khi có đủ 3 số thẳng hàng) và mũi tên khoảng trống (khi khuyết mất 3 số kề cận) bộc lộ hành vi phản ứng tự nhiên.</p>
             <div className="space-y-3 max-h-[190px] overflow-y-auto pr-1">
               {activeArrows.map((arr, index) => (
-                <div key={index} className="p-3 bg-purple-950/20 border border-purple-900/30 rounded-xl">
+                <div key={index} className="p-3 bg-warm-amber/5 border border-warm-amber/10 rounded-xl">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-200 font-display">{arr.name}</span>
-                    <span className="text-[10px] font-mono text-purple-405 uppercase bg-purple-950/60 border border-purple-900/40 px-1.5 py-0.5 rounded-md">Vẹn Toàn</span>
+                    <span className="text-xs font-bold text-white/80 font-display">{arr.name}</span>
+                    <span className="text-[10px] font-mono text-warm-amber uppercase bg-warm-amber/10 border border-warm-amber/10 px-1.5 py-0.5 rounded-md">Vẹn Toàn</span>
                   </div>
-                  <p className="text-[11px] text-slate-405 mt-1 leading-relaxed">{arr.desc}</p>
+                  <p className="text-[11px] text-white/40 mt-1 leading-relaxed">{arr.desc}</p>
                 </div>
               ))}
               {activeArrows.length === 0 && (
                 <div className="p-3 bg-black/40 border border-white/5 rounded-xl text-center">
-                  <p className="text-xs text-slate-550 italic">Không có trục tinh tú hay mũi tên bứt phá bẩm sinh. Bản tính thiên về hài hòa đa chiều hoặc khuyết thiếu linh động.</p>
+                  <p className="text-xs text-white/30 italic">Không có trục tinh tú hay mũi tên bứt phá bẩm sinh. Bản tính thiên về hài hòa đa chiều hoặc khuyết thiếu linh động.</p>
                 </div>
               )}
             </div>
@@ -231,16 +231,16 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                     }, 100);
                   }
                 }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-500 hover:via-indigo-505 hover:to-indigo-600 text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-purple-900/30 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer animate-pulse-slow"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-warm-amber to-warm-teal hover:from-warm-amber hover:to-warm-teal text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-warm-amber/30 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer animate-pulse-slow"
               >
-                <Sparkles className="w-4 h-4 text-purple-200" />
+                <Sparkles className="w-4 h-4 text-white/80" />
                 <span>{showDetailed ? 'ẨN BẢO CÁO CHI TIẾT Thần Số Học' : 'LUẬN GIẢI CHI TIẾT TỪNG MỤC THẦN SỐ HỌC (AI)'}</span>
               </button>
             </div>
 
             {showNoAiPrompt && !aiInterpretation && (
-              <div className="mt-3 p-3 bg-indigo-950/40 border border-indigo-500/20 rounded-xl space-y-2.5 animate-fade-in text-center">
-                <p className="text-[11px] text-indigo-300 leading-relaxed">🔮 <strong>Cần Kích Hoạt Luận Giải AI</strong>: Bản báo cáo 29 mục Thần Số Học chuyên sâu được biên soạn đồng điệu duy nhất bởi Trí tuệ nhân tạo Gemini.</p>
+              <div className="mt-3 p-3 bg-warm-amber/10 border border-warm-amber/20 rounded-xl space-y-2.5 animate-fade-in text-center">
+                <p className="text-[11px] text-warm-amber leading-relaxed">🔮 <strong>Cần Kích Hoạt Luận Giải AI</strong>: Bản báo cáo 29 mục Thần Số Học chuyên sâu được biên soạn đồng điệu duy nhất bởi Trí tuệ nhân tạo Gemini.</p>
                 <button
                   type="button"
                   onClick={() => {
@@ -254,7 +254,7 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                       }
                     }
                   }}
-                  className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold font-display cursor-pointer transition-all active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-warm-amber hover:bg-warm-teal text-white rounded-lg text-xs font-bold font-display cursor-pointer transition-all active:scale-95"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                   <span>Cuộn Lên Đầu Trang & Kích Hoạt Chạy AI</span>
@@ -265,20 +265,20 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
 
           {aiInterpretation && (
             <div className="glass-card hover:translate-y-0 rounded-2xl p-6 space-y-4">
-              <h4 className="font-display text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400 flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-purple-400 fill-purple-400/20" />Cốt Tủy Định Mệnh (Tóm Lược)
+              <h4 className="font-display text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-warm-amber to-warm-teal flex items-center gap-1.5">
+                <Star className="w-4 h-4 text-warm-amber fill-warm-amber/20" />Cốt Tủy Định Mệnh (Tóm Lược)
               </h4>
-              <div className="space-y-4 text-xs leading-relaxed text-slate-300">
+              <div className="space-y-4 text-xs leading-relaxed text-white/60">
                 <div>
-                  <h5 className="font-bold text-slate-200 mb-1 text-[11px]">Đường đời ({data.lifePath}):</h5>
-                  <div className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-350">
-                    <MarkdownRenderer content={aiInterpretation.lifePathInterpretation} theme="purple" />
+                  <h5 className="font-bold text-white/80 mb-1 text-[11px]">Đường đời ({data.lifePath}):</h5>
+                  <div className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-warm-sand">
+                    <MarkdownRenderer content={aiInterpretation.lifePathInterpretation} theme="amber" />
                   </div>
                 </div>
                 <div>
-                  <h5 className="font-bold text-slate-200 mb-1 text-[11px]">Sứ mệnh ({data.destiny}):</h5>
-                  <div className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-350">
-                    <MarkdownRenderer content={aiInterpretation.destinyInterpretation} theme="purple" />
+                  <h5 className="font-bold text-white/80 mb-1 text-[11px]">Sứ mệnh ({data.destiny}):</h5>
+                  <div className="p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-warm-sand">
+                    <MarkdownRenderer content={aiInterpretation.destinyInterpretation} theme="amber" />
                   </div>
                 </div>
               </div>
@@ -288,15 +288,15 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
       </div>
 
       {showDetailed && (
-        <div id="numerology-detailed-analysis" className="glass-card rounded-2xl p-6 md:p-8 space-y-6 hover:translate-y-0 relative overflow-hidden transition-all border-purple-900/10 animate-fade-in">
-          <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-gradient-to-bl from-purple-500/5 to-transparent pointer-events-none rounded-full blur-3xl" />
+        <div id="numerology-detailed-analysis" className="glass-card rounded-2xl p-6 md:p-8 space-y-6 hover:translate-y-0 relative overflow-hidden transition-all border-warm-amber/10 animate-fade-in">
+          <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-gradient-to-bl from-warm-amber/5 to-transparent pointer-events-none rounded-full blur-3xl" />
           <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 pb-5 gap-4">
             <div>
-              <div className="flex items-center gap-2 text-purple-400 text-xs font-mono uppercase tracking-wider mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />Duy Nhất & Độc Bản
+              <div className="flex items-center gap-2 text-warm-amber text-xs font-mono uppercase tracking-wider mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-warm-amber animate-pulse" />Duy Nhất & Độc Bản
               </div>
-              <h3 className="font-display text-2xl font-bold text-slate-100 flex items-center gap-2">Đại Sư Luận Giải Thần Số Học Chi Tiết</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Trọn bộ 29 phần giải đoán sâu sắc theo đề cương hoàng gia, tích hợp năng lượng âm dương.</p>
+              <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">Đại Sư Luận Giải Thần Số Học Chi Tiết</h3>
+              <p className="text-xs text-white/40 mt-0.5">Trọn bộ 29 phần giải đoán sâu sắc theo đề cương hoàng gia, tích hợp năng lượng âm dương.</p>
             </div>
           </div>
 
@@ -317,11 +317,11 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                   onClick={() => setActivePartTab(tab.id as 'A' | 'B' | 'C' | 'D')}
                   className={`flex items-center justify-center gap-2 py-3 px-2 rounded-xl border font-display text-xs font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-white/5 border-white/20 text-slate-100 shadow-md shadow-white/5 text-purple-400'
-                      : 'bg-black/20 border-white/5 text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                      ? 'bg-white/5 border-white/20 text-white shadow-md shadow-white/5 text-warm-amber'
+                      : 'bg-black/20 border-white/5 text-white/40 hover:text-white/80 hover:bg-white/5'
                   }`}
                 >
-                  <TabIcon className={`w-4 h-4 ${isActive ? 'text-purple-400 scale-110' : 'text-slate-500'} transition-transform`} />
+                  <TabIcon className={`w-4 h-4 ${isActive ? 'text-warm-amber scale-110' : 'text-white/30'} transition-transform`} />
                   <span>{tab.name}</span>
                 </button>
               );

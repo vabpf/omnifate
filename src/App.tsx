@@ -18,9 +18,9 @@ export default function App() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen bg-[#050614] flex flex-col items-center justify-center p-6 select-none relative overflow-hidden">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6 select-none relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#ffffff05_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-        <div className="text-purple-300 font-mono text-sm animate-pulse">ĐANG KHỞI TẠO OMNIFATE...</div>
+        <div className="text-warm-amber font-mono text-sm animate-pulse">ĐANG KHỞI TẠO OMNIFATE...</div>
       </div>
     );
   }

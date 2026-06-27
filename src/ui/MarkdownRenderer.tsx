@@ -1,6 +1,6 @@
 import Markdown from 'react-markdown';
 
-export type MarkdownTheme = 'purple' | 'indigo' | 'amber' | 'pink' | 'teal' | 'rose' | 'emerald' | 'slate';
+export type MarkdownTheme = 'amber' | 'teal' | 'pink' | 'rose' | 'emerald' | 'slate';
 
 interface MarkdownRendererProps {
   content: string;
@@ -12,33 +12,12 @@ const themeStyles: Record<MarkdownTheme, {
   h1: string; h2: string; h3: string; h4: string;
   strong: string; blockquote: string; link: string;
 }> = {
-  purple: {
-    h1: 'text-purple-400 border-purple-500/20',
-    h2: 'text-purple-300', h3: 'text-purple-200', h4: 'text-purple-350',
-    strong: 'text-purple-200 font-bold',
-    blockquote: 'border-purple-500 bg-purple-950/10 text-purple-200/90',
-    link: 'text-purple-400 hover:text-purple-350',
-  },
-  indigo: {
-    h1: 'text-indigo-400 border-indigo-500/20',
-    h2: 'text-indigo-300', h3: 'text-indigo-200', h4: 'text-indigo-350',
-    strong: 'text-indigo-200 font-bold',
-    blockquote: 'border-indigo-500 bg-indigo-950/10 text-indigo-200/90',
-    link: 'text-indigo-400 hover:text-indigo-350',
-  },
   amber: {
-    h1: 'text-amber-400 border-amber-500/20',
-    h2: 'text-amber-300', h3: 'text-amber-200', h4: 'text-amber-350',
-    strong: 'text-amber-200 font-bold',
-    blockquote: 'border-amber-500 bg-amber-950/10 text-amber-200/90',
-    link: 'text-amber-400 hover:text-amber-350',
-  },
-  pink: {
-    h1: 'text-pink-400 border-pink-500/20',
-    h2: 'text-pink-300', h3: 'text-pink-200', h4: 'text-pink-350',
-    strong: 'text-pink-200 font-bold',
-    blockquote: 'border-pink-500 bg-pink-950/10 text-pink-200/90',
-    link: 'text-pink-400 hover:text-pink-350',
+    h1: 'text-warm-amber border-warm-amber/20',
+    h2: 'text-warm-amber', h3: 'text-warm-sand', h4: 'text-warm-sand',
+    strong: 'text-warm-amber font-bold',
+    blockquote: 'border-warm-amber/40 bg-warm-amber/5 text-warm-sand/90',
+    link: 'text-warm-amber hover:text-warm-sand',
   },
   teal: {
     h1: 'text-teal-400 border-teal-500/20',
@@ -46,6 +25,13 @@ const themeStyles: Record<MarkdownTheme, {
     strong: 'text-teal-200 font-bold',
     blockquote: 'border-teal-500 bg-teal-950/10 text-teal-200/90',
     link: 'text-teal-400 hover:text-teal-350',
+  },
+  pink: {
+    h1: 'text-pink-400 border-pink-500/20',
+    h2: 'text-pink-300', h3: 'text-pink-200', h4: 'text-pink-350',
+    strong: 'text-pink-200 font-bold',
+    blockquote: 'border-pink-500 bg-pink-950/10 text-pink-200/90',
+    link: 'text-pink-400 hover:text-pink-350',
   },
   rose: {
     h1: 'text-rose-400 border-rose-500/20',
@@ -62,16 +48,16 @@ const themeStyles: Record<MarkdownTheme, {
     link: 'text-emerald-400 hover:text-emerald-350',
   },
   slate: {
-    h1: 'text-slate-300 border-slate-500/20',
-    h2: 'text-slate-400', h3: 'text-slate-400', h4: 'text-slate-400',
+    h1: 'text-white/60 border-white/10',
+    h2: 'text-white/50', h3: 'text-white/50', h4: 'text-white/50',
     strong: 'text-white font-bold',
-    blockquote: 'border-slate-500 bg-slate-950/10 text-slate-300/90',
-    link: 'text-indigo-400 hover:text-indigo-300',
+    blockquote: 'border-white/10 bg-white/5 text-white/60',
+    link: 'text-warm-amber hover:text-warm-sand',
   }
 };
 
-export default function MarkdownRenderer({ content, theme = 'purple', className = '' }: MarkdownRendererProps) {
-  const style = themeStyles[theme] || themeStyles.purple;
+export default function MarkdownRenderer({ content, theme = 'amber', className = '' }: MarkdownRendererProps) {
+  const style = themeStyles[theme] || themeStyles.amber;
 
   const components = {
     h1: ({ children }: any) => (
@@ -87,16 +73,16 @@ export default function MarkdownRenderer({ content, theme = 'purple', className 
       <h4 className={`text-[10px] font-bold mt-2 mb-1 uppercase ${style.h4}`}>{children}</h4>
     ),
     p: ({ children }: any) => (
-      <p className="text-xs text-slate-300 leading-relaxed mb-2.5">{children}</p>
+      <p className="text-xs text-white/60 leading-relaxed mb-2.5">{children}</p>
     ),
     ul: ({ children }: any) => (
-      <ul className="list-disc pl-4 space-y-1 my-2 text-xs text-slate-300">{children}</ul>
+      <ul className="list-disc pl-4 space-y-1 my-2 text-xs text-white/60">{children}</ul>
     ),
     ol: ({ children }: any) => (
-      <ol className="list-decimal pl-4 space-y-1 my-2 text-xs text-slate-300">{children}</ol>
+      <ol className="list-decimal pl-4 space-y-1 my-2 text-xs text-white/60">{children}</ol>
     ),
     li: ({ children }: any) => (
-      <li className="text-xs text-slate-300 leading-relaxed">{children}</li>
+      <li className="text-xs text-white/60 leading-relaxed">{children}</li>
     ),
     blockquote: ({ children }: any) => (
       <blockquote className={`border-l-2 pl-3 italic text-xs my-3 py-1.5 rounded-r-md ${style.blockquote}`}>{children}</blockquote>

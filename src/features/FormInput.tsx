@@ -89,88 +89,88 @@ export default function FormInput({ onSubmit, isLoading }: FormInputProps) {
             <h3 className="font-display text-lg font-bold text-amber-400 flex items-center gap-2">
               <Heart className="w-5 h-5 text-amber-400 fill-amber-400/20" />Thân Chủ Đã Lưu
             </h3>
-            <span className="text-xs bg-white/5 border border-white/10 px-2 py-1 rounded-full text-slate-300 font-mono">{savedProfiles.length} hồ sơ</span>
+            <span className="text-xs bg-white/5 border border-white/10 px-2 py-1 rounded-full text-white/60 font-mono">{savedProfiles.length} hồ sơ</span>
           </div>
-          <p className="text-slate-400 text-xs mb-4">Chọn nhanh hồ sơ mẫu hoặc nhấp vào để khởi chạy tức khắc biểu đồ thần học.</p>
+          <p className="text-white/40 text-xs mb-4">Chọn nhanh hồ sơ mẫu hoặc nhấp vào để khởi chạy tức khắc biểu đồ thần học.</p>
           <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
             {savedProfiles.map((p, idx) => (
               <div key={idx} id={`profile-card-${p.name.replace(/\s+/g, '-')}`} onClick={() => handleSelectProfile(p)}
                 className={`group flex items-center justify-between p-3 rounded-xl border transition-all duration-300 cursor-pointer ${
-                  name === p.name ? 'border-indigo-400 bg-white/10 shadow-md shadow-indigo-500/10' : 'border-white/5 hover:border-white/15 bg-white/2 hover:bg-white/5'
+                  name === p.name ? 'border-warm-amber bg-white/10 shadow-md shadow-warm-amber/10' : 'border-white/5 hover:border-white/15 bg-white/2 hover:bg-white/5'
                 }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-100">{p.name}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${p.gender === 'Nam' ? 'bg-indigo-950/60 text-indigo-300 border border-indigo-900/40' : 'bg-pink-950/60 text-pink-300 border border-pink-900/40'}`}>{p.gender}</span>
+                    <span className="text-sm font-bold text-white">{p.name}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${p.gender === 'Nam' ? 'bg-warm-amber/10 text-warm-amber border border-indigo-900/40' : 'bg-pink-950/60 text-pink-300 border border-pink-900/40'}`}>{p.gender}</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-1 flex flex-wrap gap-x-2">
+                  <div className="text-[11px] text-white/40 mt-1 flex flex-wrap gap-x-2">
                     <span>📅 {p.dob.split('-').reverse().join('/')}</span>
                     <span>🕒 {p.time}</span>
                     <span>📍 {p.place}</span>
                   </div>
                 </div>
                 <button id={`btn-del-${p.name.replace(/\s+/g, '-')}`} type="button" onClick={(e) => handleDeleteProfile(p.name, e)}
-                  className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-white/5 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                  className="p-1 rounded-lg text-white/30 hover:text-rose-400 hover:bg-white/5 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
               </div>
             ))}
-            {savedProfiles.length === 0 && <div className="text-center py-8 text-xs text-slate-500 border border-dashed border-white/5 rounded-xl">Chưa có hồ sơ lưu trữ.</div>}
+            {savedProfiles.length === 0 && <div className="text-center py-8 text-xs text-white/30 border border-dashed border-white/5 rounded-xl">Chưa có hồ sơ lưu trữ.</div>}
           </div>
         </div>
-        <div className="mt-6 pt-4 border-t border-white/5 text-xs text-slate-400 italic">💡 Nhấp vào bất kỳ thẻ hồ sơ nào phía trên để điền nhanh dữ liệu vào biểu mẫu tính toán bên cạnh.</div>
+        <div className="mt-6 pt-4 border-t border-white/5 text-xs text-white/40 italic">💡 Nhấp vào bất kỳ thẻ hồ sơ nào phía trên để điền nhanh dữ liệu vào biểu mẫu tính toán bên cạnh.</div>
       </div>
 
       <div className="glass-container rounded-2xl p-6 lg:col-span-2 space-y-6">
         <div className="border-b border-white/10 pb-4">
-          <h3 className="font-display text-xl font-bold text-slate-100 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-400" />Nhập Dữ Liệu Khởi Tạo Tinh Vân
+          <h3 className="font-display text-xl font-bold text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-warm-amber" />Nhập Dữ Liệu Khởi Tạo Tinh Vân
           </h3>
-          <p className="text-xs text-slate-400 mt-1">Chỉ cần cung cấp dữ liệu cơ bản một lần, thuật tử vi và bản đồ sao sẽ tự động giao quy chiếu đồng điệu.</p>
+          <p className="text-xs text-white/40 mt-1">Chỉ cần cung cấp dữ liệu cơ bản một lần, thuật tử vi và bản đồ sao sẽ tự động giao quy chiếu đồng điệu.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-purple-400" /> Họ và tên (phục vụ Thần số học) <span className="text-rose-500">*</span></label>
+            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-warm-amber" /> Họ và tên (phục vụ Thần số học) <span className="text-rose-500">*</span></label>
             <input id="input-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ví dụ: Nguyễn Văn Hoàng"
-              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition-all outline-none" />
+              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 transition-all outline-none" />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-300">Giới tính (phục vụ Tử vi & Tứ Trụ) <span className="text-rose-500">*</span></label>
+            <label className="text-xs font-medium text-white/60">Giới tính (phục vụ Tử vi & Tứ Trụ) <span className="text-rose-500">*</span></label>
             <div className="grid grid-cols-2 gap-2">
               <button id="btn-gender-nam" type="button" onClick={() => setGender('Nam')}
-                className={`py-2 px-3 text-sm rounded-xl font-medium border transition-all cursor-pointer ${gender === 'Nam' ? 'border-indigo-400 bg-indigo-650/40 text-indigo-200 shadow-md shadow-indigo-500/10' : 'border-white/5 bg-white/2 text-slate-400 hover:border-white/15'}`}>♂ Nam</button>
+                className={`py-2 px-3 text-sm rounded-xl font-medium border transition-all cursor-pointer ${gender === 'Nam' ? 'border-warm-amber bg-warm-amber/30 text-white shadow-md shadow-warm-amber/10' : 'border-white/5 bg-white/2 text-white/40 hover:border-white/15'}`}>♂ Nam</button>
               <button id="btn-gender-nu" type="button" onClick={() => setGender('Nữ')}
-                className={`py-2 px-3 text-sm rounded-xl font-medium border transition-all cursor-pointer ${gender === 'Nữ' ? 'border-pink-400 bg-pink-650/40 text-pink-200 shadow-md shadow-pink-500/10' : 'border-white/5 bg-white/2 text-slate-400 hover:border-white/15'}`}>♀ Nữ</button>
+                className={`py-2 px-3 text-sm rounded-xl font-medium border transition-all cursor-pointer ${gender === 'Nữ' ? 'border-pink-400 bg-pink-650/40 text-pink-200 shadow-md shadow-pink-500/10' : 'border-white/5 bg-white/2 text-white/40 hover:border-white/15'}`}>♀ Nữ</button>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-purple-400" /> Ngày tháng năm sinh (Dương lịch) <span className="text-rose-500">*</span></label>
+            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-warm-amber" /> Ngày tháng năm sinh (Dương lịch) <span className="text-rose-500">*</span></label>
             <input id="input-dob" type="date" required value={dob} onChange={(e) => setDob(e.target.value)}
-              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-slate-100 transition-all outline-none" />
+              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white transition-all outline-none" />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-purple-400" /> Giờ sinh chính xác (24 giờ) <span className="text-rose-500">*</span></label>
+            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-warm-amber" /> Giờ sinh chính xác (24 giờ) <span className="text-rose-500">*</span></label>
             <input id="input-time" type="time" required value={time} onChange={(e) => setTime(e.target.value)}
-              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-slate-100 transition-all outline-none" />
+              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white transition-all outline-none" />
           </div>
 
           <div className="space-y-1.5 md:col-span-2">
-            <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-purple-400" /> Nơi sinh (Thành phố / Tỉnh thành) <span className="text-rose-500">*</span></label>
+            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-warm-amber" /> Nơi sinh (Thành phố / Tỉnh thành) <span className="text-rose-500">*</span></label>
             <input id="input-place" type="text" required value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Nhập tỉnh thành sinh, ví dụ: Quảng Ninh"
-              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition-all outline-none" />
+              className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 transition-all outline-none" />
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button id="btn-local-calc" type="button" onClick={handleSubmitLocalOnly}
             disabled={isLoading || !name || !dob || !place}
-            className="flex-1 font-display glass-btn text-slate-200 hover:text-slate-100 rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-md active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">📊 Lập Bản Đồ Bản Mệnh</button>
+            className="flex-1 font-display glass-btn text-white/80 hover:text-white rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-md active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">📊 Lập Bản Đồ Bản Mệnh</button>
           <button id="btn-ai-calc" type="button" onClick={handleSubmitWithAI}
             disabled={isLoading || !name || !dob || !place}
-            className="flex-[1.2] font-display glass-btn-active text-slate-100 rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">🔮 Luận Giải Bản Mệnh (Tích Hợp AI)</button>
+            className="flex-[1.2] font-display glass-btn-active text-white rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">🔮 Luận Giải Bản Mệnh (Tích Hợp AI)</button>
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const TABS = [
 
 export default function TabNavigation({ activeTab, onTabChange, hasAiReport }: TabNavigationProps) {
   return (
-    <div className="flex border-b border-white/5 overflow-x-auto scroller-hidden gap-1.5 pb-1">
+    <div className="grid grid-cols-3 lg:grid-cols-6 border-b border-white/5 gap-1.5 pb-1">
       {TABS.map((tab) => {
         const TabIcon = tab.icon;
         const isActive = activeTab === tab.id;
@@ -28,10 +28,10 @@ export default function TabNavigation({ activeTab, onTabChange, hasAiReport }: T
             key={tab.id}
             id={`tab-${tab.id}`}
             onClick={() => onTabChange(tab.id)}
-            className={`py-3 px-4 text-xs font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer rounded-t-xl ${
+            className={`py-3 px-3 text-sm font-display font-medium tracking-wide border-b-2 transition-all whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer rounded-t-xl ${
               isActive
-                ? 'border-indigo-400 text-indigo-300 bg-white/5 font-bold shadow-sm'
-                : 'border-transparent text-slate-400 hover:text-slate-100 hover:bg-white/2'
+                ? 'border-warm-amber text-warm-amber bg-white/5 font-bold shadow-sm'
+                : 'border-transparent text-white/40 hover:text-white hover:bg-white/2'
             }`}
           >
             <TabIcon className="w-3.5 h-3.5" />

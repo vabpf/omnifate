@@ -109,10 +109,10 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen text-slate-100 flex flex-col relative overflow-x-hidden">
-      <div className="absolute top-[-5%] left-[-10%] w-[55%] h-[55%] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-[-5%] right-[-10%] w-[55%] h-[55%] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-[25%] right-[5%] w-[35%] h-[35%] bg-amber-500/5 rounded-full blur-[110px] pointer-events-none" />
+    <div className="min-h-screen text-white flex flex-col relative overflow-hidden">
+      <div className="absolute top-[-5%] left-[-10%] w-[55%] h-[55%] bg-warm-amber/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[-5%] right-[-10%] w-[55%] h-[55%] bg-warm-amber/8 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-[25%] right-[5%] w-[35%] h-[35%] bg-warm-amber/5 rounded-full blur-[110px] pointer-events-none" />
 
       <Header
         profile={profile}

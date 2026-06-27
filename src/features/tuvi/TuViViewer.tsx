@@ -44,7 +44,7 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
     <div className="space-y-8 animate-fade-in">
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <div className="xl:col-span-7 glass-card p-3 rounded-2xl relative overflow-hidden hover:translate-y-0">
-          <div className="absolute inset-0 bg-radial-gradient-to-br from-indigo-950/10 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-radial-gradient-to-br from-warm-amber/10 to-transparent pointer-events-none" />
           <div className="grid grid-cols-4 grid-rows-4 gap-1.5 aspect-square w-full">
             {Array.from({ length: 4 }).map((_, r) => (
               <div key={r} className="contents">
@@ -58,13 +58,13 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
                         <div key={coordKey} className="col-span-2 row-span-2 bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col justify-between text-center select-none shadow-inner">
                           <div className="space-y-1">
                             <span className="text-[9px] text-amber-400 font-mono tracking-widest block font-bold">LÁ SỐ TỬ VI</span>
-                            <h4 className="font-display text-sm font-bold text-slate-150 truncate">{userName}</h4>
+                            <h4 className="font-display text-sm font-bold text-white/80 truncate">{userName}</h4>
                             <div className="flex justify-center gap-1.5 mt-1.5">
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold font-mono ${gender === 'Nam' ? 'bg-indigo-950/60 text-indigo-300 border border-indigo-900/40' : 'bg-pink-950/60 text-pink-300 border border-pink-900/40'}`}>{gender}</span>
-                              <span className="text-[9px] glass-pill text-slate-300 px-1.5 py-0.5 rounded font-mono">2026 Bính Ngọ</span>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold font-mono ${gender === 'Nam' ? 'bg-warm-amber/10 text-warm-amber border border-indigo-900/40' : 'bg-pink-950/60 text-pink-300 border border-pink-900/40'}`}>{gender}</span>
+                              <span className="text-[9px] glass-pill text-white/60 px-1.5 py-0.5 rounded font-mono">2026 Bính Ngọ</span>
                             </div>
                           </div>
-                          <div className="text-[9px] text-slate-400 space-y-0.5 font-mono">
+                          <div className="text-[9px] text-white/40 space-y-0.5 font-mono">
                             <div>📅 {formattedGregorian}</div>
                             <div>🕒 Đứng giờ: {time}</div>
                             <div className="truncate">📍 {bornPlace}</div>
@@ -85,13 +85,13 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
                     <button key={coordKey} id={`tuvi-palace-cell-${palace.index}`} type="button" onClick={() => setActiveCell(palace)}
                       className={`relative flex flex-col justify-between p-2 rounded-xl border text-left transition-all cursor-pointer select-none group ${
                         isCellSelected
-                          ? 'border-indigo-400 bg-indigo-950/40 shadow-md shadow-indigo-500/15 text-slate-100'
+                          ? 'border-warm-amber bg-warm-amber/10 shadow-md shadow-warm-amber/15 text-white'
                           : 'border-white/5 hover:border-white/15 bg-white/2 hover:bg-white/5'
                       }`}
                     >
                       <div className="flex items-start justify-between w-full border-b border-white/5 pb-1">
-                        <span className="text-[9px] font-bold text-slate-100 font-display line-clamp-1">{palace.name.split(' ')[0]}</span>
-                        <span className="text-[8px] font-mono text-slate-400">{palace.branch}</span>
+                        <span className="text-[9px] font-bold text-white font-display line-clamp-1">{palace.name.split(' ')[0]}</span>
+                        <span className="text-[8px] font-mono text-white/40">{palace.branch}</span>
                       </div>
                       <div className="flex-1 py-1 space-y-0.5">
                         {palace.majorStars.map((ms, msIdx) => (
@@ -101,7 +101,7 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
                           </div>
                         ))}
                       </div>
-                      <div className="flex items-center justify-between w-full text-[8px] border-t border-white/5 pt-0.5 mt-0.5 text-slate-400 font-mono">
+                      <div className="flex items-center justify-between w-full text-[8px] border-t border-white/5 pt-0.5 mt-0.5 text-white/40 font-mono">
                         <span className="truncate max-w-[40px]">{palace.minorStars[0]}</span>
                         <span className={`${palace.element === 'Kim' ? 'text-amber-300' : palace.element === 'Mộc' ? 'text-emerald-300' : palace.element === 'Thủy' ? 'text-cyan-300' : palace.element === 'Hỏa' ? 'text-rose-300' : 'text-orange-400'}`}>{palace.element}</span>
                       </div>
@@ -117,26 +117,26 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
           <div className="glass-card rounded-2xl p-6 space-y-4 hover:translate-y-0">
             <div className="flex items-start justify-between border-b border-white/10 pb-3">
               <div>
-                <span className="text-[10px] text-indigo-400 font-mono font-bold tracking-widest block uppercase">CHI TIẾT CUNG PHÂN</span>
-                <h4 className="font-display text-lg font-bold text-slate-100 flex items-center gap-2 mt-1">Cung {currentPalace.name} ({currentPalace.branch})</h4>
+                <span className="text-[10px] text-warm-amber font-mono font-bold tracking-widest block uppercase">CHI TIẾT CUNG PHÂN</span>
+                <h4 className="font-display text-lg font-bold text-white flex items-center gap-2 mt-1">Cung {currentPalace.name} ({currentPalace.branch})</h4>
               </div>
               <span className={`text-[10px] px-2.5 py-1 rounded-full font-mono font-bold border ${elementColors[currentPalace.element]}`}>Mệnh: {currentPalace.element}</span>
             </div>
             <div className="space-y-4.5">
               <div>
-                <span className="text-[10px] text-slate-500 font-mono block uppercase mb-1.5">Mạng lưới Sao chiếu</span>
+                <span className="text-[10px] text-white/30 font-mono block uppercase mb-1.5">Mạng lưới Sao chiếu</span>
                 <div className="flex flex-wrap gap-1.5">
                   {currentPalace.majorStars.map((star, sIdx) => (
                     <span key={sIdx} className="text-[10px] bg-amber-500/10 border border-amber-800/30 text-amber-300 font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><Award className="w-3 h-3" /> {star} (Chính tinh)</span>
                   ))}
                   {currentPalace.minorStars.map((star, sIdx) => (
-                    <span key={sIdx} className="text-[10px] bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded-md">{star}</span>
+                    <span key={sIdx} className="text-[10px] bg-white/5 border border-white/10 text-white/60 px-2 py-0.5 rounded-md">{star}</span>
                   ))}
                 </div>
               </div>
               <div>
-                <span className="text-[10px] text-slate-500 font-mono block uppercase mb-1.5">Luận giải bối cảnh</span>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <span className="text-[10px] text-white/30 font-mono block uppercase mb-1.5">Luận giải bối cảnh</span>
+                <p className="text-xs text-white/60 leading-relaxed">
                   Cung {currentPalace.name} tọa lạc tại {currentPalace.branch} cấu thành bởi nguyên thể {currentPalace.element}. 
                   Sự tương hộ giữa các phụ tinh như {currentPalace.minorStars.join(', ')} mang lại bộ tài nguyên cá nhân hoàn hảo, 
                   phát tiết nghị lực mạnh mẽ giúp nâng đỡ cốt cách của thân chủ trong những thăng trầm đại vận.
@@ -147,14 +147,14 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
 
           {aiInterpretation && (
             <div className="glass-card rounded-2xl p-6 space-y-4 hover:translate-y-0">
-              <h4 className="font-display text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400 flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-purple-400" />Đại Sư Luận Giải Tử Vi
+              <h4 className="font-display text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-warm-amber to-warm-teal flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-warm-amber" />Đại Sư Luận Giải Tử Vi
               </h4>
-              <div className="space-y-4 text-xs leading-relaxed text-slate-300 max-h-[220px] overflow-y-auto pr-1">
-                <div><h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1"><Eye className="w-3.5 h-3.5 text-indigo-400" /> Bản Tính & Cốt Cách:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.personality} theme="purple" /></div></div>
-                <div><h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1"><Award className="w-3.5 h-3.5 text-indigo-400" /> Con Đường Sự Nghiệp:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.career} theme="purple" /></div></div>
-                <div><h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1"><ShieldAlert className="w-3.5 h-3.5 text-indigo-400" /> Tài Bạch & Dư Địa Tiền Tụ:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.wealth} theme="purple" /></div></div>
-                <div><h5 className="font-bold text-slate-200 mb-0.5 flex items-center gap-1">💖 Tình Duyên & Gia Đạo:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.love} theme="purple" /></div></div>
+              <div className="space-y-4 text-xs leading-relaxed text-white/60 max-h-[220px] overflow-y-auto pr-1">
+                <div><h5 className="font-bold text-white/80 mb-0.5 flex items-center gap-1"><Eye className="w-3.5 h-3.5 text-warm-amber" /> Bản Tính & Cốt Cách:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.personality} theme="amber" /></div></div>
+                <div><h5 className="font-bold text-white/80 mb-0.5 flex items-center gap-1"><Award className="w-3.5 h-3.5 text-warm-amber" /> Con Đường Sự Nghiệp:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.career} theme="amber" /></div></div>
+                <div><h5 className="font-bold text-white/80 mb-0.5 flex items-center gap-1"><ShieldAlert className="w-3.5 h-3.5 text-warm-amber" /> Tài Bạch & Dư Địa Tiền Tụ:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.wealth} theme="amber" /></div></div>
+                <div><h5 className="font-bold text-white/80 mb-0.5 flex items-center gap-1">💖 Tình Duyên & Gia Đạo:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.love} theme="amber" /></div></div>
               </div>
             </div>
           )}
