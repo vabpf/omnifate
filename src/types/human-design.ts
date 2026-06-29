@@ -12,4 +12,6 @@ export interface HumanDesignData {
   strategy: string;
   profile: string;
   centers: HumanDesignCenter[];
+  activeGates: number[];
+  definedChannels: string[];
 }

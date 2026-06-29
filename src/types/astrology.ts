@@ -4,6 +4,7 @@ export interface HistoricalAspect {
   type: 'Conjunction' | 'Opposition' | 'Trine' | 'Square' | 'Sextile';
   angle: number;
   color: string;
+  strength?: number;
 }
 
 export interface PlanetPosition {
@@ -13,6 +14,7 @@ export interface PlanetPosition {
   signSymbol: string;
   degree: number;
   house: number;
+  retrograde?: boolean;
 }
 
 export interface AstrologyData {

@@ -1,21 +1,35 @@
 export function buildNumerologyPartPrompt(
   name: string, dob: string, gender: string | undefined,
-  numData: { lifePath: number; destiny: number; soul: number; birthGrid: Record<string, number> },
+  numData: {
+    lifePath: number; destiny: number; soul: number; personality: number;
+    attitude: number; maturity: number; personalYear: number; personalMonth: number;
+    pinnacleChallenge: { pinnacle: number; challenge: number; ageRange: string }[];
+    birthGrid: Record<string, number>; karmicDebts: number[];
+  },
   part: string,
   currentYear: number = new Date().getFullYear()
 ): string {
   const nextYear = currentYear + 1;
   const nextNextYear = currentYear + 2;
+  const karmicStr = numData.karmicDebts.length ? numData.karmicDebts.join(', ') : 'Không có';
   const partOutline = getPartOutline(part, currentYear, nextYear, nextNextYear);
+  const pinnacleStr = numData.pinnacleChallenge.map(p => `${p.ageRange}: Đỉnh ${p.pinnacle}, Thử thách ${p.challenge}`).join('; ');
 
   return `Hãy thực hiện một báo cáo luận giải Thần số học chuyên sâu tuyệt đối dạt dào tâm huyết theo ĐỀ CƯƠNG dưới đây dưới định dạng Markdown chất lượng cao cho thân chủ với thông tin sau:
 - Họ và tên: ${name}
 - Ngày sinh Dương lịch: ${dob}
 - Giới tính: ${gender || 'Nam'}
-- Chỉ số Đường đời đã tính toán: ${numData.lifePath}
-- Chỉ số Sứ mệnh đã tính toán: ${numData.destiny}
-- Chỉ số Linh hồn đã tính toán: ${numData.soul}
-- Các con số trong biểu đồ ngày sinh (birthGrid): ${JSON.stringify(numData.birthGrid)}
+- Chỉ số Đường đời (Life Path): ${numData.lifePath}
+- Chỉ số Sứ mệnh (Destiny): ${numData.destiny}
+- Chỉ số Linh hồn (Soul Urge): ${numData.soul}
+- Chỉ số Nhân cách (Personality): ${numData.personality}
+- Chỉ số Thái độ (Attitude): ${numData.attitude}
+- Chỉ số Trưởng thành (Maturity): ${numData.maturity}
+- Năm cá nhân hiện tại (Personal Year): ${numData.personalYear}
+- Tháng cá nhân hiện tại (Personal Month): ${numData.personalMonth}
+- Các chu kỳ Đỉnh cao/Thử thách: ${pinnacleStr}
+- Các con số Nợ nghiệp: ${karmicStr}
+- Biểu đồ ngày sinh (Birth Grid): ${JSON.stringify(numData.birthGrid)}
 
 ${partOutline}
 
@@ -59,12 +73,12 @@ function getPartOutline(part: string, currentYear?: number, nextYear?: number, n
 9. Chỉ số sứ mệnh (Destiny): Định nghĩa vai trò cuộc sống lớn lao.
 10. Tương quan Đường đời - Sứ mệnh: Mức độ đồng điệu, các xung đột nội tâm tiềm ẩn và giải pháp thiết lập cân bằng.
 11. Thử thách sứ mệnh: Những chướng ngại cản lối và bài học thăng hoa.
-12. Chỉ số trưởng thành: Khái niệm, thời điểm kích hoạt và hướng rèn luyện.
+12. Chỉ số trưởng thành (Maturity): Khái niệm, thời điểm kích hoạt và hướng rèn luyện.
 13. Năng lực trưởng thành: Vai trò & cách đánh thức.
 14. Chỉ số linh hồn (Soul Urge): Tiếng vọng khát khao thầm kín bên trong, điều khiến tâm hồn thực sự hạnh phúc.
 15. Tương quan Đường đời - Linh hồn: Sự hài hòa hay mâu thuẫn giữa lý trí hành động và khao khát nội tâm.
 16. Thử thách linh hồn: Bài học cho đứa trẻ bên trong.
-17. Chỉ số nhân cách: Mặt nạ xã hội, hình ảnh phản chiếu trong mắt người xung quanh.
+17. Chỉ số nhân cách (Personality): Mặt nạ xã hội, hình ảnh phản chiếu trong mắt người xung quanh.
 18. Thử thách nhân cách: Phản ứng trước áp lực xã hội.
 19. Điểm yếu: Các số thiếu (mất cân bằng) trên biểu đồ tên và ngày sinh.
 20. Nợ nghiệp (nếu có): Các con số nợ nghiệp lớn (13/4, 14/5, 16/7, 19/1) hoặc bài học nghiệp quả tích lũy cần hóa giải.
@@ -74,7 +88,7 @@ function getPartOutline(part: string, currentYear?: number, nextYear?: number, n
 📊 ĐỀ CƯƠNG PHÂN TÍCH NĂNG LỰC & THÁI ĐỘ (PHẦN D):
 21. Biểu đồ sức mạnh (Ngày sinh): Cấu trúc 3x3 ngày sinh, phân tích chi tiết các mũi tên cá tính (Trục quyết tâm, Trục ý chí, Trục tâm linh, v.v.), điểm mạnh và các vị trí thiếu hụt năng lượng.
 22. Biểu đồ tên & tổng hợp: Cấu thành sơ đồ tên, tác động rung động âm thanh của tên gọi tới cuộc đời.
-23. Chỉ số thái độ: Cách thức tiếp cận, phản ứng đầu tiên trước các biến cố cuộc sống.
+23. Chỉ số thái độ (Attitude): Cách thức tiếp cận, phản ứng đầu tiên trước các biến cố cuộc sống.
 24. Năng lực tự nhiên: Tài năng thiên bẩm và ứng dụng thực tiễn vượt trội.
 25. Chỉ số vượt khó (AQ): Cách vượt qua căng thẳng, nghịch cảnh.
 26. Năng lực tư duy: Cân bằng lý trí lô-gích và cảm xúc trực giác.

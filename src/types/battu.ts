@@ -13,4 +13,18 @@ export interface BattuData {
     Thổ: number;
   };
   dayMaster: string;
+  hiddenStems: {
+    year: string[];
+    month: string[];
+    day: string[];
+    hour: string[];
+  };
+  nayin: {
+    year: string;
+    month: string;
+    day: string;
+    hour: string;
+  };
+  mingGong: string;
+  shenGong: string;
 }
