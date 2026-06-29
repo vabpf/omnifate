@@ -24,7 +24,7 @@ router.post('/api/ai/human-design', async (req, res) => {
     res.json({ content: text.trim() });
   } catch (error: any) {
     console.error('HumanDesign AI error:', error);
-    res.status(500).json({ error: error.message || 'Lỗi luận giải Thiết Kế Nhân Dạng.' });
+    res.status(500).json({ error: 'Lỗi luận giải Thiết Kế Nhân Dạng. Vui lòng thử lại sau.' });
   }
 });
 

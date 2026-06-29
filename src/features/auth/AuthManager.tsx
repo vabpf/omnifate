@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   signOut,
   onAuthStateChanged,
@@ -40,6 +40,8 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
   const [savedLookups, setSavedLookups] = useState<Array<{ id: string; profile: UserProfile; createdAt: string }>>([]);
   const [lookupsLoading, setLookupsLoading] = useState(false);
   const [isSavingCurrent, setIsSavingCurrent] = useState(false);
+  const currentProfileRef = useRef(currentProfile);
+  currentProfileRef.current = currentProfile;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -68,7 +70,7 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
       items.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       setSavedLookups(items);
 
-      if (items.length > 0 && !currentProfile) {
+      if (items.length > 0 && !currentProfileRef.current) {
         onSelectSavedProfile(items[0].profile);
       }
     } catch (err) {
@@ -104,16 +106,11 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
     }
 
     try {
-      let docRef;
-      try {
-        docRef = await addDoc(collection(db, 'history'), {
-          userId: user.uid,
-          profile: currentProfile,
-          createdAt: new Date().toISOString(),
-        });
-      } catch (err) {
-        handleFirestoreError(err, OperationType.CREATE, 'history');
-      }
+      const docRef = await addDoc(collection(db, 'history'), {
+        userId: user.uid,
+        profile: currentProfile,
+        createdAt: new Date().toISOString(),
+      });
 
       setSavedLookups(prev => [
         { id: docRef.id, profile: currentProfile, createdAt: new Date().toISOString() },
@@ -129,11 +126,7 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
   const handleDeleteProfile = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      try {
-        await deleteDoc(doc(db, 'history', id));
-      } catch (err) {
-        handleFirestoreError(err, OperationType.DELETE, `history/${id}`);
-      }
+      await deleteDoc(doc(db, 'history', id));
       setSavedLookups(prev => prev.filter(item => item.id !== id));
     } catch (err) {
       console.error('Error deleting profile:', err);

@@ -24,7 +24,7 @@ router.post('/api/ai/battu', async (req, res) => {
     res.json({ content: text.trim() });
   } catch (error: any) {
     console.error('Battu AI error:', error);
-    res.status(500).json({ error: error.message || 'Lỗi luận giải Bát Tự.' });
+    res.status(500).json({ error: 'Lỗi luận giải Bát Tự. Vui lòng thử lại sau.' });
   }
 });
 

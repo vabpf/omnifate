@@ -24,7 +24,7 @@ router.post('/api/ai/astrology', async (req, res) => {
     res.json({ content: text.trim() });
   } catch (error: any) {
     console.error('Astrology AI error:', error);
-    res.status(500).json({ error: error.message || 'Lỗi luận giải Chiêm tinh.' });
+    res.status(500).json({ error: 'Lỗi luận giải Chiêm tinh. Vui lòng thử lại sau.' });
   }
 });
 

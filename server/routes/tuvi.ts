@@ -24,7 +24,7 @@ router.post('/api/ai/tuvi', async (req, res) => {
     res.json({ content: text.trim() });
   } catch (error: any) {
     console.error('TuVi AI error:', error);
-    res.status(500).json({ error: error.message || 'Lỗi luận giải Tử Vi.' });
+    res.status(500).json({ error: 'Lỗi luận giải Tử Vi. Vui lòng thử lại sau.' });
   }
 });
 

@@ -31,7 +31,7 @@ router.post('/api/numerology-part', async (req, res) => {
     res.json({ content: text.trim() });
   } catch (error: any) {
     console.error(`Error during fate part ${req.body?.part || ''} analysis:`, error);
-    res.status(500).json({ error: error.message || 'Lỗi hệ thống trong quá trình phân tích.' });
+    res.status(500).json({ error: 'Lỗi hệ thống trong quá trình phân tích. Vui lòng thử lại sau.' });
   }
 });
 

@@ -35,7 +35,7 @@ router.post('/api/fate-analysis', async (req, res) => {
     res.json(data);
   } catch (error: any) {
     console.error('Error during fate analysis:', error);
-    res.status(500).json({ error: error.message || 'Lỗi hệ thống trong quá trình phân tích vận mệnh dĩ vãng.' });
+    res.status(500).json({ error: 'Lỗi hệ thống trong quá trình phân tích vận mệnh. Vui lòng thử lại sau.' });
   }
 });
 

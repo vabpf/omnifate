@@ -56,12 +56,7 @@ export default function DashboardPage() {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    const initialProfile: UserProfile = {
-      name: 'Khánh An', dob: '1995-11-05', time: '14:30', place: 'Hà Nội', gender: 'Nam',
-    };
-    handleRecalculate(initialProfile);
-  }, []);
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout;

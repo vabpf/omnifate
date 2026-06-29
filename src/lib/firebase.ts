@@ -17,7 +17,7 @@ async function testConnection() {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error: any) {
     // Treat as warning instead of a blocking error, as the user's database might be newly created or restricted by Firestore rules
-    console.warn("Firestore connection check info:", error?.message || error);
+    console.debug("Firestore connection check info:", error?.message || error);
   }
 }
 testConnection();

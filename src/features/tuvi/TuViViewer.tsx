@@ -80,7 +80,7 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
                             <span className="text-[9px] text-amber-400 font-mono tracking-widest block font-bold">LÁ SỐ TỬ VI</span>
                             <h4 className="font-display text-sm font-bold text-white/80 truncate">{userName}</h4>
                             <div className="flex justify-center gap-1.5 mt-1.5">
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold font-mono ${gender === 'Nam' ? 'bg-warm-amber/10 text-warm-amber border border-indigo-900/40' : 'bg-pink-950/60 text-pink-300 border border-pink-900/40'}`}>{gender}</span>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold font-mono ${gender === 'Nam' ? 'bg-warm-amber/10 text-warm-amber border border-amber-900/40' : 'bg-pink-950/60 text-pink-300 border border-pink-900/40'}`}>{gender}</span>
                               <span className="text-[9px] glass-pill text-white/60 px-1.5 py-0.5 rounded font-mono">{new Date().getFullYear()} {getLunarYear(new Date().getFullYear())}</span>
                             </div>
                           </div>
