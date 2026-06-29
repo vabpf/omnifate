@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { BattuData, UserProfile } from '../../types';
 import { HelpCircle, Star, Sparkles, Loader2 } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
@@ -23,7 +23,7 @@ const ELEMENT_LABELS: { [key: string]: { name: string; color: string; bg: string
   Thổ: { name: 'Chân Thổ (Earth)', color: 'bg-orange-500', bg: 'bg-orange-950/20', text: 'text-orange-400', desc: 'Đại diện cho lòng bao dung tín cẩn, sự điềm tĩnh kiên trì dẻo dai.' },
 };
 
-export default function BattuViewer({ data, profile, aiInterpretation }: BattuViewerProps) {
+export default memo(function BattuViewer({ data, profile, aiInterpretation }: BattuViewerProps) {
   const [localAiContent, setLocalAiContent] = useState<string | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -159,4 +159,4 @@ export default function BattuViewer({ data, profile, aiInterpretation }: BattuVi
       </div>
     </div>
   );
-}
+});

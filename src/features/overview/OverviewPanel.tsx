@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Sparkles } from 'lucide-react';
 import { NumerologyData, FateAnalysisReport, AstrologyData, TuViPalace, BattuData, HumanDesignData } from '../../types';
 import { getLunarYear } from '../../constants';
@@ -27,7 +28,7 @@ function getFallbackAdvice(lifePath: number) {
   return FALLBACK_ADVICE[lifePath] || { colors: 'Xanh ngọc, Tía, Lam vũ', mindset: 'Thân tĩnh khí hòa, vạn sự thịnh vượng tự sinh tự an.' };
 }
 
-export default function OverviewPanel({ aiReport, numData, astData, tuviData, battuData, hdData }: OverviewPanelProps) {
+export default memo(function OverviewPanel({ aiReport, numData, astData, tuviData, battuData, hdData }: OverviewPanelProps) {
   const currentYear = new Date().getFullYear();
   const lunarYear = getLunarYear(currentYear);
   const fallback = getFallbackAdvice(numData.lifePath);
@@ -140,6 +141,6 @@ export default function OverviewPanel({ aiReport, numData, astData, tuviData, ba
       </div>
     </div>
   );
-}
+});
 
 

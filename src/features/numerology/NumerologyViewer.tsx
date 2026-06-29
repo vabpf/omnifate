@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { NumerologyData, UserProfile } from '../../types';
 import { HelpCircle, Star, Sparkles, BookOpen, Compass, Award, Activity } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
@@ -43,7 +43,7 @@ const ARROWS = [
   { name: 'Mũi tên Trí Tuệ (3-6-9)', cells: [3, 6, 9], desc: 'Óc sáng tạo dồi dào, tư duy logic, tiếp thu kiến thức khoa học học thuật xuất sắc.' },
 ];
 
-export default function NumerologyViewer({ data, aiInterpretation, profile }: NumerologyViewerProps) {
+export default memo(function NumerologyViewer({ data, aiInterpretation, profile }: NumerologyViewerProps) {
   const [selectedCell, setSelectedCell] = useState<number | null>(null);
   const [activePartTab, setActivePartTab] = useState<'A' | 'B' | 'C' | 'D'>('A');
   const [showDetailed, setShowDetailed] = useState<boolean>(false);
@@ -360,4 +360,4 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
       )}
     </div>
   );
-}
+});

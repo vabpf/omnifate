@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { AstrologyData, PlanetPosition, UserProfile } from '../../types';
 import { HelpCircle, Star, Compass, Sparkles, Loader2 } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
@@ -16,7 +16,7 @@ interface AstrologyViewerProps {
   };
 }
 
-export default function AstrologyViewer({ data, profile, aiInterpretation }: AstrologyViewerProps) {
+export default memo(function AstrologyViewer({ data, profile, aiInterpretation }: AstrologyViewerProps) {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetPosition | null>(null);
   const [localAiContent, setLocalAiContent] = useState<string | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
@@ -235,4 +235,4 @@ export default function AstrologyViewer({ data, profile, aiInterpretation }: Ast
       </div>
     </div>
   );
-}
+});

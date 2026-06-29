@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { TuViPalace, UserProfile } from '../../types';
 import { Eye, Award, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
@@ -28,7 +28,7 @@ const COORDINATE_MAP: { [key: string]: number } = {
   '2,0': 3, '1,0': 4,
 };
 
-export default function TuViViewer({ palaces, userName, gender, dob, time, bornPlace, profile, aiInterpretation }: TuViViewerProps) {
+export default memo(function TuViViewer({ palaces, userName, gender, dob, time, bornPlace, profile, aiInterpretation }: TuViViewerProps) {
   const [activeCell, setActiveCell] = useState<TuViPalace | null>(null);
   const [localAiContent, setLocalAiContent] = useState<string | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
@@ -201,6 +201,6 @@ export default function TuViViewer({ palaces, userName, gender, dob, time, bornP
       </div>
     </div>
   );
-}
+});
 
 

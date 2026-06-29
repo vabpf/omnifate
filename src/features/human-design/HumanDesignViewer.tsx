@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { HumanDesignData, HumanDesignCenter, UserProfile } from '../../types';
 import { HelpCircle, Star, Loader2, Sparkles } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
@@ -38,7 +38,7 @@ const CENTER_EXPLANATIONS: { [key: string]: string } = {
   solar_plexus: 'Hệ thống cảm xúc đa sắc sảo, chiều sâu thăng trầm của tâm trạng, trực giác tâm linh tiến bộ.',
 };
 
-export default function HumanDesignViewer({ data, profile, aiInterpretation }: HumanDesignViewerProps) {
+export default memo(function HumanDesignViewer({ data, profile, aiInterpretation }: HumanDesignViewerProps) {
   const [selectedCenter, setSelectedCenter] = useState<HumanDesignCenter | null>(null);
   const [localAiContent, setLocalAiContent] = useState<string | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
@@ -218,4 +218,4 @@ export default function HumanDesignViewer({ data, profile, aiInterpretation }: H
       </div>
     </div>
   );
-}
+});
