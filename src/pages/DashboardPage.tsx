@@ -90,8 +90,7 @@ export default function DashboardPage() {
 
     if (!runAi) {
       setAiReport(null);
-      await new Promise(r => setTimeout(r, 80));
-      setLocalLoading(false);
+      requestAnimationFrame(() => setLocalLoading(false));
       return;
     }
 

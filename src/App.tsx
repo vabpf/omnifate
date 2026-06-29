@@ -3,17 +3,22 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from './lib/firebase';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import ErrorBoundary from './layout/ErrorBoundary';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!initialized) setInitialized(true);
+    }, 8000);
     const unsub = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setInitialized(true);
+      clearTimeout(timer);
     });
-    return () => unsub();
+    return () => { unsub(); clearTimeout(timer); };
   }, []);
 
   if (!initialized) {
@@ -26,8 +31,16 @@ export default function App() {
   }
 
   if (!currentUser) {
-    return <LoginPage />;
+    return (
+      <ErrorBoundary>
+        <LoginPage />
+      </ErrorBoundary>
+    );
   }
 
-  return <DashboardPage />;
+  return (
+    <ErrorBoundary>
+      <DashboardPage />
+    </ErrorBoundary>
+  );
 }
