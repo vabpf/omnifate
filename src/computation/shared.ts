@@ -8,7 +8,7 @@ export function removeVietnameseTones(str: string): string {
   str = str.replace(/đ/g, 'd');
   str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, 'a');
   str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, 'e');
-  str = str.replace(/Ì|Í|Ị|B|Ĩ/g, 'i');
+  str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, 'i');
   str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, 'o');
   str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, 'u');
   str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, 'y');

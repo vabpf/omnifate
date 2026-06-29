@@ -1,9 +1,12 @@
 export function buildNumerologyPartPrompt(
   name: string, dob: string, gender: string | undefined,
   numData: { lifePath: number; destiny: number; soul: number; birthGrid: Record<string, number> },
-  part: string
+  part: string,
+  currentYear: number = new Date().getFullYear()
 ): string {
-  const partOutline = getPartOutline(part);
+  const nextYear = currentYear + 1;
+  const nextNextYear = currentYear + 2;
+  const partOutline = getPartOutline(part, currentYear, nextYear, nextNextYear);
 
   return `Hãy thực hiện một báo cáo luận giải Thần số học chuyên sâu tuyệt đối dạt dào tâm huyết theo ĐỀ CƯƠNG dưới đây dưới định dạng Markdown chất lượng cao cho thân chủ với thông tin sau:
 - Họ và tên: ${name}
@@ -25,16 +28,16 @@ Yêu cầu định dạng đầu ra:
 export const numerologyPartSystemInstruction =
   "Bạn là một Đại sư Thần số học Tây phương chuyên nghiệp và thông thái dạt dào tri thức. Lời phán của bạn sâu sắc, mang tính xây dựng, tâm lý học sâu sắc, văn phong uyên bác, bay bổng nhưng thực tế.";
 
-function getPartOutline(part: string): string {
+function getPartOutline(part: string, currentYear?: number, nextYear?: number, nextNextYear?: number): string {
   if (part === 'A') {
     return `
 📊 ĐỀ CƯƠNG PHÂN TÍCH TỔNG QUAN VẬN SỐ (PHẦN A):
 1. Chu kỳ vận số:
    1.1 Chu kỳ 9 năm (tổng quan vận trình và nhịp sinh học năng lượng hiện tại)
    1.2 Phân tích từng năm cá nhân gần nhất:
-       - Năm cá nhân hiện tại (2026): Luận chi tiết về Tình yêu, Sự nghiệp, Tài chính, Giao tiếp xã hội, Học tập, Hôn nhân.
-       - Năm tiếp theo (2027): Định hướng hành khí bổ trợ.
-       - Năm tiếp theo (2028): Sự bứt phá tương lai.
+       - Năm cá nhân hiện tại (${currentYear || new Date().getFullYear()}): Luận chi tiết về Tình yêu, Sự nghiệp, Tài chính, Giao tiếp xã hội, Học tập, Hôn nhân.
+       - Năm tiếp theo (${nextYear || new Date().getFullYear() + 1}): Định hướng hành khí bổ trợ.
+       - Năm tiếp theo (${nextNextYear || new Date().getFullYear() + 2}): Sự bứt phá tương lai.
 2. Nhóm tính cách bản ngã (Xác định xem thân chủ thuộc nhóm hành vi nào dựa trên các chỉ số cốt lõi: độc lập, nhạy cảm, sáng tạo, thực tế, linh hoạt, yêu thương, tri thức, quyền lực hay nhân ái).
 3. Nhóm ngành phù hợp:
    3.1 Phương pháp xác định qua các chỉ số cốt lõi.

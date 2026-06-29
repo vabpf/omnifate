@@ -10,4 +10,4 @@ export const ASTROLOGY_FALLBACK = {
   ascendant: 'Lăng kính mặt nạ xã hội, dáng điệu, ấn tượng đầu tiên.',
 };
 
-export const BAT_TU_FALLBACK = `Dựa vào Bát Tự, Nhật chủ mang thiên can {dayMaster} liên kết hài hòa với các ngũ hành xung quanh. Việc thấu hiểu sự thừa thiếu trong ngũ hành bản thể cho phép thân chủ điều phối môi trường sống, sự nghiệp, thậm chí là chọn lựa lương duyên tốt lành.`;
+export const BAT_TU_FALLBACK = (dayMaster: string) => `Dựa vào Bát Tự, Nhật chủ mang thiên can ${dayMaster} liên kết hài hòa với các ngũ hành xung quanh. Việc thấu hiểu sự thừa thiếu trong ngũ hành bản thể cho phép thân chủ điều phối môi trường sống, sự nghiệp, thậm chí là chọn lựa lương duyên tốt lành.`;

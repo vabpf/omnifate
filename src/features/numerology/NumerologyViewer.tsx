@@ -165,7 +165,7 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                             ))}
                           </div>
                         ) : (
-                          <span className="text-xs text-white/20/60 leading-none">trống</span>
+                          <span className="text-xs text-white/30 leading-none">trống</span>
                         )}
                       </div>
                       <span className="text-[10px] text-right font-mono text-white/30">
@@ -224,6 +224,9 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                 type="button"
                 id="btn-toggle-detailed-numerology-arrows"
                 onClick={() => {
+                  if (!showDetailed && !aiInterpretation) {
+                    setShowNoAiPrompt(true);
+                  }
                   setShowDetailed(!showDetailed);
                   if (!showDetailed) {
                     setTimeout(() => {
@@ -231,7 +234,7 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
                     }, 100);
                   }
                 }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-warm-amber to-warm-teal hover:from-warm-amber hover:to-warm-teal text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-warm-amber/30 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer animate-pulse-slow"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-warm-amber to-warm-teal hover:from-warm-amber hover:to-warm-teal text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-warm-amber/30 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer animate-pulse"
               >
                 <Sparkles className="w-4 h-4 text-white/80" />
                 <span>{showDetailed ? 'ẨN BẢO CÁO CHI TIẾT Thần Số Học' : 'LUẬN GIẢI CHI TIẾT TỪNG MỤC THẦN SỐ HỌC (AI)'}</span>

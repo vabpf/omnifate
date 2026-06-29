@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { AstrologyData, PlanetPosition } from '../../types';
-import { HelpCircle, Star, Compass } from 'lucide-react';
+import { AstrologyData, PlanetPosition, UserProfile } from '../../types';
+import { HelpCircle, Star, Compass, Sparkles, Loader2 } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
+import { fetchAiAstrology } from '../../api/ai-astrology';
 import { ZODIAC_SIGNS } from '../../constants';
 
 interface AstrologyViewerProps {
   data: AstrologyData;
+  profile: UserProfile;
   aiInterpretation?: {
     sunSignInterpretation: string;
     moonSignInterpretation: string;
@@ -14,8 +16,24 @@ interface AstrologyViewerProps {
   };
 }
 
-export default function AstrologyViewer({ data, aiInterpretation }: AstrologyViewerProps) {
+export default function AstrologyViewer({ data, profile, aiInterpretation }: AstrologyViewerProps) {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetPosition | null>(null);
+  const [localAiContent, setLocalAiContent] = useState<string | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const handleFetchAi = async () => {
+    setIsLoadingAi(true);
+    setAiError(null);
+    try {
+      const content = await fetchAiAstrology(profile, data);
+      setLocalAiContent(content);
+    } catch (e: any) {
+      setAiError(e.message || 'Không thể liên lạc với AI.');
+    } finally {
+      setIsLoadingAi(false);
+    }
+  };
 
   const size = 320;
   const center = size / 2;
@@ -58,6 +76,13 @@ export default function AstrologyViewer({ data, aiInterpretation }: AstrologyVie
       />
     );
   });
+
+  const activeAi = aiInterpretation || (localAiContent ? {
+    sunSignInterpretation: localAiContent,
+    moonSignInterpretation: '',
+    ascendantInterpretation: '',
+    natalChartSynthesis: '',
+  } : null);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -124,7 +149,7 @@ export default function AstrologyViewer({ data, aiInterpretation }: AstrologyVie
               {aspectLinesRendered}
               {planetPoints.map((p, idx) => (
                 <g key={idx} id={`planet-node-${p.name}`} onClick={() => setSelectedPlanet(p)} className="cursor-pointer group">
-                  <circle cx={p.pos.x} cy={p.pos.y} r={selectedPlanet?.name === p.name ? '9' : '7'} fill={selectedPlanet?.name === p.name ? '#6366F1' : '#11132e'} stroke={selectedPlanet?.name === p.name ? '#E0E7FF' : '#6366f1'} strokeWidth="1.5" className="transition-all duration-300 group-hover:r-[9px]" />
+                  <circle cx={p.pos.x} cy={p.pos.y} r={selectedPlanet?.name === p.name ? '9' : '7'} fill={selectedPlanet?.name === p.name ? '#6366F1' : '#11132e'} stroke={selectedPlanet?.name === p.name ? '#E0E7FF' : '#6366f1'} strokeWidth="1.5" className="transition-all duration-300" />
                   <text x={p.pos.x} y={p.pos.y} fill="#F1F5F9" fontSize="7" textAnchor="middle" alignmentBaseline="middle" className="font-mono font-bold">{p.symbol}</text>
                 </g>
               ))}
@@ -174,19 +199,38 @@ export default function AstrologyViewer({ data, aiInterpretation }: AstrologyVie
             </div>
           </div>
 
-          {aiInterpretation && (
+          {activeAi ? (
             <div className="glass-card rounded-2xl p-6 space-y-4 hover:translate-y-0">
               <h4 className="font-display text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-warm-amber to-warm-teal flex items-center gap-1.5">
                 <Star className="w-5 h-5 text-warm-amber fill-warm-amber/20" />Đại Sư Luận Giải Bản Đồ Sao
               </h4>
               <div className="space-y-4 text-xs leading-relaxed text-white/60 overflow-y-auto max-h-[300px] pr-1">
-                <div><h5 className="font-bold text-white/80 mb-1">Cung Mặt Trời ({data.sunSign}) - Tôi Luôn Cố Gắng:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.sunSignInterpretation} theme="amber" /></div></div>
-                <div><h5 className="font-bold text-white/80 mb-1">Cung Mặt Trăng ({data.moonSign}) - Cảm Xúc Sâu Kín:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.moonSignInterpretation} theme="amber" /></div></div>
-                <div><h5 className="font-bold text-white/80 mb-1">Cung Mọc ({data.ascendant}) - Lớp Vỏ Xã Hội:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.ascendantInterpretation} theme="amber" /></div></div>
-                <div><h5 className="font-bold text-white/80 mb-1">Hợp Nhất Toàn Diện Bản Đồ Sao:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.natalChartSynthesis} theme="amber" /></div></div>
+                {aiInterpretation ? (
+                  <>
+                    <div><h5 className="font-bold text-white/80 mb-1">Cung Mặt Trời ({data.sunSign}) - Tôi Luôn Cố Gắng:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.sunSignInterpretation} theme="amber" /></div></div>
+                    <div><h5 className="font-bold text-white/80 mb-1">Cung Mặt Trăng ({data.moonSign}) - Cảm Xúc Sâu Kín:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.moonSignInterpretation} theme="amber" /></div></div>
+                    <div><h5 className="font-bold text-white/80 mb-1">Cung Mọc ({data.ascendant}) - Lớp Vỏ Xã Hội:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.ascendantInterpretation} theme="amber" /></div></div>
+                    <div><h5 className="font-bold text-white/80 mb-1">Hợp Nhất Toàn Diện Bản Đồ Sao:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.natalChartSynthesis} theme="amber" /></div></div>
+                  </>
+                ) : localAiContent && (
+                  <div><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={localAiContent} theme="amber" /></div></div>
+                )}
               </div>
             </div>
-          )}
+          ) : isLoadingAi ? (
+            <div className="glass-card rounded-2xl p-8 flex items-center justify-center hover:translate-y-0">
+              <Loader2 className="w-6 h-6 animate-spin text-warm-amber" />
+            </div>
+          ) : !aiInterpretation ? (
+            <div className="glass-card rounded-2xl p-6 text-center hover:translate-y-0">
+              <p className="text-xs text-white/40 mb-4">Chưa có luận giải AI. Bạn có thể kích hoạt luận giải riêng cho Chiêm Tinh ngay bây giờ.</p>
+              {aiError && <p className="text-xs text-rose-400 mb-3">{aiError}</p>}
+              <button type="button" onClick={handleFetchAi}
+                className="inline-flex items-center gap-2 py-2.5 px-5 bg-gradient-to-r from-warm-amber to-warm-teal hover:from-warm-teal hover:to-warm-amber text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-warm-amber/30 transition-all active:scale-95 cursor-pointer">
+                <Sparkles className="w-4 h-4" /> Luận Giải Chiêm Tinh (AI)
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

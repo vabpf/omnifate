@@ -93,7 +93,7 @@ export default function PrintDossier({ profile, numData, astData, tuviData, batt
         {aiReport?.battu && (
           <div className="space-y-2 leading-relaxed">
             <p><strong>Dụng Thần / Hỷ thần bổ khuyết Ngũ hành khí:</strong> {aiReport.battu.favourableElements}</p>
-            <p><strong>Lời khuyện mấu chốt cải cải hành tinh cát tường:</strong> {aiReport.battu.advice}</p>
+            <p><strong>Lời khuyên mấu chốt cải biến vận hạn cát tường:</strong> {aiReport.battu.advice}</p>
           </div>
         )}
       </div>

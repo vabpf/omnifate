@@ -1,4 +1,6 @@
-export function buildFateAnalysisPrompt(name: string, dob: string, time: string, place: string, gender: string): string {
+export function buildFateAnalysisPrompt(name: string, dob: string, time: string, place: string, gender: string, currentYear: number = new Date().getFullYear()): string {
+  const nextYear = currentYear + 1;
+  const nextNextYear = currentYear + 2;
   return `Hãy thực hiện một bức thư và báo cáo luận giải vận mệnh chi tiết tích hợp cả Đông và Tây cho thân chủ với thông tin sau:
 - Họ và tên: ${name}
 - Ngày sinh Dương lịch: ${dob} (định dạng YYYY-MM-DD, bạn hãy tự chuyển sang Âm lịch chuẩn xác)
@@ -13,9 +15,9 @@ PHẦN A. PHÂN TÍCH TỔNG QUAN (gán vào trường "partA_Overview" bằng M
 1. Chu kỳ vận số:
   1.1 Chu kỳ 9 năm (tổng quan vận trình)
   1.2 Phân tích từng năm gần nhất:
-    1.2.1 Năm cá nhân hiện tại (ví dụ: 2026): Luận chi tiết: Tình yêu, Sự nghiệp, Tài chính, Giao tiếp xã hội, Học tập, Hôn nhân
-    1.2.2 Năm tiếp theo (2027)
-    1.2.3 Năm tiếp theo (2028)
+     1.2.1 Năm cá nhân hiện tại (${currentYear}): Luận chi tiết: Tình yêu, Sự nghiệp, Tài chính, Giao tiếp xã hội, Học tập, Hôn nhân
+     1.2.2 Năm tiếp theo (${nextYear})
+     1.2.3 Năm tiếp theo (${nextNextYear})
 2. Nhóm tính cách bản ngã (Phân tích xem thân chủ thuộc nhóm nào hoặc phối hợp thế nào trong 9 nhóm hành vi: Nhóm 1 mạnh mẽ – độc lập, Nhóm 2 nhạy cảm – lắng nghe, Nhóm 3 sáng tạo – lạc quan, Nhóm 4 cẩn thẩn – thực tế, Nhóm 5 linh hoạt – tò mò, Nhóm 6 yêu thương – kiểm soát, Nhóm 7 tri thức – khám phá, Nhóm 8 công bằng – lý tưởng, Nhóm 9 trách nhiệm – cho đi)
 3. Nhóm ngành phù hợp:
   3.1 Phương pháp xác định: Chỉ số đường đời, Chỉ số sứ mệnh, Chỉ số linh hồn

@@ -4,6 +4,10 @@ import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import fateAnalysisRouter from './routes/fate-analysis';
 import numerologyPartRouter from './routes/numerology-part';
+import astrologyRouter from './routes/astrology';
+import tuviRouter from './routes/tuvi';
+import battuRouter from './routes/battu';
+import humanDesignRouter from './routes/human-design';
 
 dotenv.config();
 
@@ -14,6 +18,10 @@ app.use(express.json());
 
 app.use(fateAnalysisRouter);
 app.use(numerologyPartRouter);
+app.use(astrologyRouter);
+app.use(tuviRouter);
+app.use(battuRouter);
+app.use(humanDesignRouter);
 
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
@@ -35,4 +43,7 @@ async function startServer() {
   });
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+});

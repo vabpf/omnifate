@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { HumanDesignData, HumanDesignCenter } from '../../types';
-import { HelpCircle, Star } from 'lucide-react';
+import { HumanDesignData, HumanDesignCenter, UserProfile } from '../../types';
+import { HelpCircle, Star, Loader2, Sparkles } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
+import { fetchAiHumanDesign } from '../../api/ai-human-design';
 
 interface HumanDesignViewerProps {
   data: HumanDesignData;
+  profile: UserProfile;
   aiInterpretation?: {
     typeInterpretation: string;
     authorityInterpretation: string;
@@ -36,8 +38,24 @@ const CENTER_EXPLANATIONS: { [key: string]: string } = {
   solar_plexus: 'Hệ thống cảm xúc đa sắc sảo, chiều sâu thăng trầm của tâm trạng, trực giác tâm linh tiến bộ.',
 };
 
-export default function HumanDesignViewer({ data, aiInterpretation }: HumanDesignViewerProps) {
+export default function HumanDesignViewer({ data, profile, aiInterpretation }: HumanDesignViewerProps) {
   const [selectedCenter, setSelectedCenter] = useState<HumanDesignCenter | null>(null);
+  const [localAiContent, setLocalAiContent] = useState<string | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const handleFetchAi = async () => {
+    setIsLoadingAi(true);
+    setAiError(null);
+    try {
+      const content = await fetchAiHumanDesign(profile, data);
+      setLocalAiContent(content);
+    } catch (e: any) {
+      setAiError(e.message || 'Không thể liên lạc với AI.');
+    } finally {
+      setIsLoadingAi(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -147,16 +165,35 @@ export default function HumanDesignViewer({ data, aiInterpretation }: HumanDesig
             </div>
           </div>
 
-          {aiInterpretation && (
+          {aiInterpretation || localAiContent ? (
             <div className="glass-card rounded-2xl p-6 space-y-4 hover:translate-y-0">
               <h4 className="font-display text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-warm-amber to-warm-teal flex items-center gap-1.5">
                 <Star className="w-5 h-5 text-warm-amber fill-warm-amber/20" />Đại Sư Luận Giải Thiết Kế Nhân Dạng
               </h4>
               <div className="space-y-4 text-xs leading-relaxed text-white/60 overflow-y-auto max-h-[300px] pr-1">
-                <div><h5 className="font-bold text-white/80 mb-1">Loại Hào Quang ({data.type}) - Bản Chất Vận Hành:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.typeInterpretation} theme="teal" /></div></div>
-                <div><h5 className="font-bold text-white/80 mb-1">Thẩm Quyền Đưa Quyết Định ({data.authority.split(' ')[0]}):</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.authorityInterpretation} theme="teal" /></div></div>
-                <div><h5 className="font-bold text-white/80 mb-1">Chiến Lược Hấp Dẫn Hào Quang:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.strategyInterpretation} theme="teal" /></div></div>
+                {aiInterpretation ? (
+                  <>
+                    <div><h5 className="font-bold text-white/80 mb-1">Loại Hào Quang ({data.type}) - Bản Chất Vận Hành:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.typeInterpretation} theme="teal" /></div></div>
+                    <div><h5 className="font-bold text-white/80 mb-1">Thẩm Quyền Đưa Quyết Định ({data.authority.split(' ')[0]}):</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.authorityInterpretation} theme="teal" /></div></div>
+                    <div><h5 className="font-bold text-white/80 mb-1">Chiến Lược Hấp Dẫn Hào Quang:</h5><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.strategyInterpretation} theme="teal" /></div></div>
+                  </>
+                ) : localAiContent && (
+                  <div><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={localAiContent} theme="teal" /></div></div>
+                )}
               </div>
+            </div>
+          ) : isLoadingAi ? (
+            <div className="glass-card rounded-2xl p-8 flex items-center justify-center hover:translate-y-0">
+              <Loader2 className="w-6 h-6 animate-spin text-warm-amber" />
+            </div>
+          ) : (
+            <div className="glass-card rounded-2xl p-6 text-center hover:translate-y-0">
+              <p className="text-xs text-white/40 mb-4">Chưa có luận giải AI. Kích hoạt luận giải riêng cho Thiết Kế Nhân Dạng ngay bây giờ.</p>
+              {aiError && <p className="text-xs text-rose-400 mb-3">{aiError}</p>}
+              <button type="button" onClick={handleFetchAi}
+                className="inline-flex items-center gap-2 py-2.5 px-5 bg-gradient-to-r from-warm-amber to-warm-teal hover:from-warm-teal hover:to-warm-amber text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-warm-amber/30 transition-all active:scale-95 cursor-pointer">
+                <Sparkles className="w-4 h-4" /> Luận Giải Thiết Kế Nhân Dạng (AI)
+              </button>
             </div>
           )}
         </div>

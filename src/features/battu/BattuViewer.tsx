@@ -1,9 +1,12 @@
-import { BattuData } from '../../types';
-import { HelpCircle, Star, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { BattuData, UserProfile } from '../../types';
+import { HelpCircle, Star, Sparkles, Loader2 } from 'lucide-react';
 import { MarkdownRenderer } from '../../ui';
+import { fetchAiBattu } from '../../api/ai-battu';
 
 interface BattuViewerProps {
   data: BattuData;
+  profile: UserProfile;
   aiInterpretation?: {
     elementAnalysis: string;
     favourableElements: string;
@@ -20,14 +23,31 @@ const ELEMENT_LABELS: { [key: string]: { name: string; color: string; bg: string
   Thổ: { name: 'Chân Thổ (Earth)', color: 'bg-orange-500', bg: 'bg-orange-950/20', text: 'text-orange-400', desc: 'Đại diện cho lòng bao dung tín cẩn, sự điềm tĩnh kiên trì dẻo dai.' },
 };
 
-export default function BattuViewer({ data, aiInterpretation }: BattuViewerProps) {
+export default function BattuViewer({ data, profile, aiInterpretation }: BattuViewerProps) {
+  const [localAiContent, setLocalAiContent] = useState<string | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const handleFetchAi = async () => {
+    setIsLoadingAi(true);
+    setAiError(null);
+    try {
+      const content = await fetchAiBattu(profile, data);
+      setLocalAiContent(content);
+    } catch (e: any) {
+      setAiError(e.message || 'Không thể liên lạc với AI.');
+    } finally {
+      setIsLoadingAi(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="glass-card rounded-2xl p-6 hover:translate-y-0">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h4 className="font-display text-base font-bold text-warm-amber flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-450" />Lá Số Tứ Trụ Bát Tự (4 Pillars of Destiny)
+              <Sparkles className="w-5 h-5 text-amber-400" />Lá Số Tứ Trụ Bát Tự (4 Pillars of Destiny)
             </h4>
             <p className="text-xs text-white/40 mt-0.5">Xác cấu trúc Thiên Can và Địa Chi bổ trợ từ thời khắc sinh.</p>
           </div>
@@ -103,20 +123,37 @@ export default function BattuViewer({ data, aiInterpretation }: BattuViewerProps
             </p>
           </div>
 
-          {aiInterpretation ? (
+          {aiInterpretation || localAiContent ? (
             <div className="mt-6 pt-4 border-t border-white/10 space-y-4">
               <h5 className="font-display text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-warm-amber to-warm-teal flex items-center gap-1.5">
                 <Star className="w-4 h-4 text-warm-amber" />Đại Sư Luận Giải Bát Tự
               </h5>
               <div className="space-y-4 text-xs leading-relaxed text-white/60 max-h-[170px] overflow-y-auto pr-1">
-                <div><h6 className="font-bold text-white/80 mb-0.5">Phân Tích Thừa Thiếu Ngũ Hành:</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.elementAnalysis} theme="amber" /></div></div>
-                <div><h6 className="font-bold text-white/80 mb-0.5">Dụng Thần / Hỷ Thần trợ giúp (Vũ khí cát tinh):</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.favourableElements} theme="emerald" /></div></div>
-                <div><h6 className="font-bold text-white/80 mb-0.5">Kỵ Thần tránh né (Thế lực xung sát):</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.unfavourableElements} theme="rose" /></div></div>
-                <div><h6 className="font-bold text-white/80 mb-0.5">Phương Pháp Cải Vận Trực Tiếp:</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.advice} theme="amber" /></div></div>
+                {aiInterpretation ? (
+                  <>
+                    <div><h6 className="font-bold text-white/80 mb-0.5">Phân Tích Thừa Thiếu Ngũ Hành:</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.elementAnalysis} theme="amber" /></div></div>
+                    <div><h6 className="font-bold text-white/80 mb-0.5">Dụng Thần / Hỷ Thần trợ giúp (Vũ khí cát tinh):</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.favourableElements} theme="emerald" /></div></div>
+                    <div><h6 className="font-bold text-white/80 mb-0.5">Kỵ Thần tránh né (Thế lực xung sát):</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.unfavourableElements} theme="rose" /></div></div>
+                    <div><h6 className="font-bold text-white/80 mb-0.5">Phương Pháp Cải Vận Trực Tiếp:</h6><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={aiInterpretation.advice} theme="amber" /></div></div>
+                  </>
+                ) : localAiContent && (
+                  <div><div className="p-3 bg-black/40 rounded-xl border border-white/5"><MarkdownRenderer content={localAiContent} theme="amber" /></div></div>
+                )}
               </div>
             </div>
+          ) : isLoadingAi ? (
+            <div className="mt-6 p-6 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-warm-amber" />
+            </div>
           ) : (
-            <div className="mt-6 bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-white/40 italic text-center">Vận hành tính năng "Xem kết quả đại sư" kích hoạt gói tinh vân AI để nhận phân tích Dụng Thần cải vận đặc biệt.</div>
+            <div className="mt-6 bg-black/20 p-4 rounded-xl border border-white/5 text-center">
+              <p className="text-xs text-white/40 mb-3">Chưa có luận giải AI. Kích hoạt luận giải riêng cho Bát Tự ngay bây giờ.</p>
+              {aiError && <p className="text-xs text-rose-400 mb-3">{aiError}</p>}
+              <button type="button" onClick={handleFetchAi}
+                className="inline-flex items-center gap-2 py-2.5 px-5 bg-gradient-to-r from-warm-amber to-warm-teal hover:from-warm-teal hover:to-warm-amber text-white text-xs font-bold font-display rounded-xl tracking-wide shadow-lg shadow-warm-amber/30 transition-all active:scale-95 cursor-pointer">
+                <Sparkles className="w-4 h-4" /> Luận Giải Bát Tự (AI)
+              </button>
+            </div>
           )}
         </div>
       </div>

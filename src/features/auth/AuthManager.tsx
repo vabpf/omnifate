@@ -57,12 +57,7 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
     setLookupsLoading(true);
     try {
       const q = query(collection(db, 'history'), where('userId', '==', uid));
-      let querySnapshot;
-      try {
-        querySnapshot = await getDocs(q);
-      } catch (err) {
-        handleFirestoreError(err, OperationType.LIST, 'history');
-      }
+      const querySnapshot = await getDocs(q);
 
       const items: any[] = [];
       querySnapshot.forEach((docSnap) => {
@@ -73,20 +68,8 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
       items.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       setSavedLookups(items);
 
-      if (items.length > 0) {
-        if (currentProfile?.name === 'Khánh An' && currentProfile?.dob === '1995-11-05') {
-          onSelectSavedProfile(items[0].profile);
-        }
-      } else if (items.length === 0 && auth.currentUser) {
-        if (currentProfile?.name === 'Khánh An') {
-          onSelectSavedProfile({
-            name: auth.currentUser.displayName || 'Hội viên OmniFate',
-            dob: '1995-11-05',
-            time: '14:30',
-            place: 'Hà Nội',
-            gender: 'Nam',
-          });
-        }
+      if (items.length > 0 && !currentProfile) {
+        onSelectSavedProfile(items[0].profile);
       }
     } catch (err) {
       console.error('Error fetching lookups:', err);
@@ -178,7 +161,7 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
               ) : (
                 <Bookmark className="w-3 h-3 fill-white/10" />
               )}
-              <span>Lưu Hồ Sơ</span>
+              <span>Lưu hồ sơ</span>
             </button>
           )}
 

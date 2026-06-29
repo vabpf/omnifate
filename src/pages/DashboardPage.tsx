@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 import {
   UserProfile,
   FateAnalysisReport,
@@ -46,6 +48,13 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
   const [errorText, setErrorText] = useState<string | null>(null);
+  const [localLoading, setLocalLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     const initialProfile: UserProfile = {
@@ -81,11 +90,13 @@ export default function DashboardPage() {
 
   const handleStartAnalysis = async (userProfile: UserProfile, runAi: boolean) => {
     setErrorText(null);
+    setLocalLoading(true);
     handleRecalculate(userProfile);
 
     if (!runAi) {
       setAiReport(null);
-      setActiveTab('numerology');
+      await new Promise(r => setTimeout(r, 80));
+      setLocalLoading(false);
       return;
     }
 
@@ -101,6 +112,7 @@ export default function DashboardPage() {
       setErrorText(e.message || 'Không thể liên lạc với máy chủ AI lúc này. Vui lòng thử lại sau.');
     } finally {
       setIsLoading(false);
+      setLocalLoading(false);
     }
   };
 
@@ -134,7 +146,7 @@ export default function DashboardPage() {
         )}
 
         <section className="print:hidden">
-          <FormInput onSubmit={handleStartAnalysis} isLoading={isLoading} />
+          <FormInput onSubmit={handleStartAnalysis} isLoading={isLoading} localLoading={localLoading} user={user} />
         </section>
 
         {profile && numData && astData && tuviData && battuData && hdData && (
@@ -145,17 +157,24 @@ export default function DashboardPage() {
               hasAiReport={!!aiReport}
             />
 
-            <div className="glass-container p-6 rounded-2xl min-h-[420px]">
+            <div className={`glass-container p-6 rounded-2xl min-h-[420px] transition-opacity duration-150 ${localLoading ? 'opacity-60' : ''}`}>
               {activeTab === 'overview' && (
                 <div className="space-y-8 animate-fade-in">
-                  <OverviewPanel aiReport={aiReport} numData={numData} />
+                  <OverviewPanel
+                    aiReport={aiReport}
+                    numData={numData}
+                    astData={astData}
+                    tuviData={tuviData}
+                    battuData={battuData}
+                    hdData={hdData}
+                  />
                 </div>
               )}
               {activeTab === 'numerology' && (
                 <NumerologyViewer data={numData} aiInterpretation={aiReport?.numerology} profile={profile} />
               )}
               {activeTab === 'astrology' && (
-                <AstrologyViewer data={astData} aiInterpretation={aiReport?.astrology} />
+                <AstrologyViewer data={astData} aiInterpretation={aiReport?.astrology} profile={profile} />
               )}
               {activeTab === 'tuvi' && (
                 <TuViViewer
@@ -165,14 +184,15 @@ export default function DashboardPage() {
                   dob={profile.dob}
                   time={profile.time}
                   bornPlace={profile.place}
+                  profile={profile}
                   aiInterpretation={aiReport?.tuvi}
                 />
               )}
               {activeTab === 'battu' && (
-                <BattuViewer data={battuData} aiInterpretation={aiReport?.battu} />
+                <BattuViewer data={battuData} aiInterpretation={aiReport?.battu} profile={profile} />
               )}
               {activeTab === 'hd' && (
-                <HumanDesignViewer data={hdData} aiInterpretation={aiReport?.humanDesign} />
+                <HumanDesignViewer data={hdData} aiInterpretation={aiReport?.humanDesign} profile={profile} />
               )}
             </div>
           </section>

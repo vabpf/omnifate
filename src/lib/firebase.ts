@@ -49,8 +49,12 @@ export interface FirestoreErrorInfo {
 }
 
 export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): never {
+  const code = (error as any)?.code || '';
+  const defaultMsg = `Không thể ${operationType} dữ liệu${path ? ` tại ${path}` : ''}. Vui lòng thử lại sau.`;
+  const message = error instanceof Error ? error.message : String(error);
+
   const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
+    error: message,
     authInfo: {
       userId: auth.currentUser?.uid,
       email: auth.currentUser?.email,
@@ -65,8 +69,8 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   };
-  console.error('Firestore Error details:', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  console.error('Firestore Error:', code, message);
+  throw new Error(defaultMsg);
 }
 
 export function getFriendlyAuthErrorMessage(error: any): string {
