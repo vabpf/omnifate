@@ -148,7 +148,7 @@ export default function AstrologyViewer({ data, profile, aiInterpretation }: Ast
               ))}
               {aspectLinesRendered}
               {planetPoints.map((p, idx) => (
-                <g key={idx} id={`planet-node-${p.name}`} onClick={() => setSelectedPlanet(p)} className="cursor-pointer group">
+                <g key={idx} id={`planet-node-${p.name}`} onClick={() => setSelectedPlanet(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedPlanet(p); } }} tabIndex={0} role="button" aria-label={`Hành tinh ${p.name} tại cung ${p.sign}`} className="cursor-pointer group outline-none focus:opacity-80">
                   <circle cx={p.pos.x} cy={p.pos.y} r={selectedPlanet?.name === p.name ? '9' : '7'} fill={selectedPlanet?.name === p.name ? '#6366F1' : '#11132e'} stroke={selectedPlanet?.name === p.name ? '#E0E7FF' : '#6366f1'} strokeWidth="1.5" className="transition-all duration-300" />
                   <text x={p.pos.x} y={p.pos.y} fill="#F1F5F9" fontSize="7" textAnchor="middle" alignmentBaseline="middle" className="font-mono font-bold">{p.symbol}</text>
                 </g>

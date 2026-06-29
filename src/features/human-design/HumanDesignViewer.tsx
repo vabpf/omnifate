@@ -114,17 +114,35 @@ export default function HumanDesignViewer({ data, profile, aiInterpretation }: H
                 const fillOpacity = center.defined ? 0.9 : 0.6;
                 const stroke = isSel ? '#FFFFFF' : '#475569';
                 const strokeWidth = isSel ? 2 : 1;
-                const commonProps = {
-                  id: `node-hd-${shape.id}`, fill, fillOpacity, stroke, strokeWidth,
-                  className: "cursor-pointer transition hover:scale-105 origin-center",
-                  onClick: () => setSelectedCenter(center),
-                  ...shape.props,
-                };
-
                 if (shape.type === 'polygon') {
-                  return <polygon key={shape.id} {...commonProps as any} />;
+                  return (
+                    <polygon
+                      key={shape.id}
+                      id={`node-hd-${shape.id}`}
+                      fill={fill} fillOpacity={fillOpacity} stroke={stroke} strokeWidth={strokeWidth}
+                      className="cursor-pointer transition hover:scale-105 origin-center outline-none focus:opacity-80"
+                      onClick={() => setSelectedCenter(center)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedCenter(center); } }}
+                      tabIndex={0} role="button" aria-label={`Trung tâm ${center.name} (${center.defined ? 'xác định' : 'trống mở'})`}
+                      points={shape.props.points}
+                    />
+                  );
                 }
-                return <rect key={shape.id} {...commonProps as any} />;
+                return (
+                  <rect
+                    key={shape.id}
+                    id={`node-hd-${shape.id}`}
+                    fill={fill} fillOpacity={fillOpacity} stroke={stroke} strokeWidth={strokeWidth}
+                    className="cursor-pointer transition hover:scale-105 origin-center outline-none focus:opacity-80"
+                    onClick={() => setSelectedCenter(center)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedCenter(center); } }}
+                    tabIndex={0} role="button" aria-label={`Trung tâm ${center.name} (${center.defined ? 'xác định' : 'trống mở'})`}
+                    x={shape.props.x} y={shape.props.y}
+                    width={shape.props.width} height={shape.props.height}
+                    rx={shape.props.rx}
+                    transform={shape.props.transform}
+                  />
+                );
               })}
             </svg>
           </div>

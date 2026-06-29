@@ -76,7 +76,7 @@ export default function NumerologyViewer({ data, aiInterpretation, profile }: Nu
       else if (part === 'C') setLocalPartC(content);
       else if (part === 'D') setLocalPartD(content);
     } catch (e: any) {
-      console.error(e);
+      console.error('Numerology AI fetch error:', e);
       setErrorPart(prev => ({ ...prev, [part]: e.message || 'Không thể liên lạc với hệ thống giải đoán AI lúc này.' }));
     } finally {
       setIsLoadingPart(prev => ({ ...prev, [part]: false }));

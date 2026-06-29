@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import {
@@ -27,12 +28,13 @@ import LoadingOverlay from '../layout/LoadingOverlay';
 import ErrorBanner from '../layout/ErrorBanner';
 import FormInput from '../features/FormInput';
 import OverviewPanel from '../features/overview/OverviewPanel';
-import NumerologyViewer from '../features/numerology/NumerologyViewer';
-import AstrologyViewer from '../features/astrology/AstrologyViewer';
-import TuViViewer from '../features/tuvi/TuViViewer';
-import BattuViewer from '../features/battu/BattuViewer';
-import HumanDesignViewer from '../features/human-design/HumanDesignViewer';
-import PrintDossier from '../print/PrintDossier';
+
+const NumerologyViewer = lazy(() => import('../features/numerology/NumerologyViewer'));
+const AstrologyViewer = lazy(() => import('../features/astrology/AstrologyViewer'));
+const TuViViewer = lazy(() => import('../features/tuvi/TuViViewer'));
+const BattuViewer = lazy(() => import('../features/battu/BattuViewer'));
+const HumanDesignViewer = lazy(() => import('../features/human-design/HumanDesignViewer'));
+const PrintDossier = lazy(() => import('../print/PrintDossier'));
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -55,8 +57,6 @@ export default function DashboardPage() {
     const unsubscribe = onAuthStateChanged(auth, setUser);
     return unsubscribe;
   }, []);
-
-
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -103,7 +103,7 @@ export default function DashboardPage() {
       setAiReport(data);
       setActiveTab('overview');
     } catch (e: any) {
-      console.error(e);
+      console.error('Fate analysis AI error:', e);
       setErrorText(e.message || 'Không thể liên lạc với máy chủ AI lúc này. Vui lòng thử lại sau.');
     } finally {
       setIsLoading(false);
@@ -153,6 +153,7 @@ export default function DashboardPage() {
             />
 
             <div className={`glass-container p-6 rounded-2xl min-h-[420px] transition-opacity duration-150 ${localLoading ? 'opacity-60' : ''}`}>
+              <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-warm-amber" /></div>}>
               {activeTab === 'overview' && (
                 <div className="space-y-8 animate-fade-in">
                   <OverviewPanel
@@ -189,12 +190,14 @@ export default function DashboardPage() {
               {activeTab === 'hd' && (
                 <HumanDesignViewer data={hdData} aiInterpretation={aiReport?.humanDesign} profile={profile} />
               )}
+              </Suspense>
             </div>
           </section>
         )}
 
         {profile && numData && astData && tuviData && battuData && hdData && (
           <div className="hidden print:block">
+            <Suspense fallback={null}>
             <PrintDossier
               profile={profile}
               numData={numData}
@@ -204,6 +207,7 @@ export default function DashboardPage() {
               hdData={hdData}
               aiReport={aiReport}
             />
+            </Suspense>
           </div>
         )}
       </main>
