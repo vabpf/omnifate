@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import { getGeminiClient } from '../ai/client';
 import { buildBattuPrompt, battuSystemInstruction } from '../ai/prompts/battu';
+import { requireFields } from './validate';
 
 const router = Router();
 
 router.post('/api/ai/battu', async (req, res) => {
   try {
+    if (!requireFields(req, res, ['name', 'dob', 'battuData'])) return;
     const { name, dob, time, place, gender, battuData } = req.body;
-    if (!name || !dob || !battuData) {
-      return res.status(400).json({ error: 'Thiếu thông tin đầu vào.' });
-    }
 
     const ai = getGeminiClient();
     const prompt = buildBattuPrompt(name, dob, time, place, gender, battuData);

@@ -4,4 +4,6 @@ export interface UserProfile {
   time: string;
   place: string;
   gender: 'Nam' | 'Nữ';
+  timezone?: string;
+  profileId?: string;
 }

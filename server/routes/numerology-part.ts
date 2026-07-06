@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { getGeminiClient } from '../ai/client';
 import { buildNumerologyPartPrompt, numerologyPartSystemInstruction } from '../ai/prompts/numerology-part';
+import { requireFields } from './validate';
 
 const router = Router();
 
 router.post('/api/numerology-part', async (req, res) => {
   try {
+    if (!requireFields(req, res, ['name', 'dob', 'part', 'numData'])) return;
     const { name, dob, gender, numData, part } = req.body;
-
-    if (!name || !dob || !part || !numData) {
-      return res.status(400).json({ error: 'Thiếu thông tin đầu vào. Vui lòng kiểm tra lại.' });
-    }
 
     const ai = getGeminiClient();
     const prompt = buildNumerologyPartPrompt(name, dob, gender, numData, part);

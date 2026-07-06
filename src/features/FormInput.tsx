@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { User } from 'firebase/auth';
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { UserProfile } from '../types';
-import { User as UserIcon, Calendar, Clock, MapPin, Sparkles, Trash2, Heart } from 'lucide-react';
+import { saveProfile as fsSaveProfile, loadProfiles as fsLoadProfiles, deleteProfile as fsDeleteProfile } from '../lib/firestore-db';
+import { User as UserIcon, Calendar, Clock, MapPin, Globe, Sparkles, Trash2, Heart, Save, ChevronDown } from 'lucide-react';
 
 interface FormInputProps {
   onSubmit: (profile: UserProfile, runAI: boolean) => void;
@@ -12,10 +11,28 @@ interface FormInputProps {
   user?: User | null;
 }
 
+const tzOffset = (tz: string) => {
+  try {
+    const s = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'longOffset' }).formatToParts(Date.now());
+    const off = s.find(p => p.type === 'timeZoneName')?.value || '';
+    return off.replace('GMT', 'GMT');
+  } catch { return ''; }
+};
+
+const COMMON_TZS = [
+  'Asia/Ho_Chi_Minh', 'Asia/Bangkok', 'Asia/Singapore', 'Asia/Hong_Kong',
+  'Asia/Shanghai', 'Asia/Tokyo', 'Asia/Seoul', 'Asia/Taipei',
+  'Asia/Kolkata', 'Asia/Dubai', 'Asia/Jakarta', 'Asia/Manila',
+  'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Europe/Moscow',
+  'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+  'America/Sao_Paulo', 'America/Mexico_City', 'America/Toronto',
+  'Australia/Sydney', 'Pacific/Auckland', 'Africa/Cairo', 'Africa/Lagos',
+];
+
 const PRESET_PROFILES: UserProfile[] = [
-  { name: 'Khánh An', dob: '1995-11-05', time: '14:30', place: 'Hà Nội', gender: 'Nam' },
-  { name: 'Thanh Nhã', dob: '1998-05-18', time: '08:45', place: 'Đà Nẵng', gender: 'Nữ' },
-  { name: 'Minh Đức', dob: '1990-03-23', time: '21:15', place: 'TP. Hồ Chí Minh', gender: 'Nam' },
+  { name: 'Khánh An', dob: '1995-11-05', time: '14:30', place: 'Hà Nội', gender: 'Nam', timezone: 'Asia/Ho_Chi_Minh' },
+  { name: 'Thanh Nhã', dob: '1998-05-18', time: '08:45', place: 'Đà Nẵng', gender: 'Nữ', timezone: 'Asia/Ho_Chi_Minh' },
+  { name: 'Minh Đức', dob: '1990-03-23', time: '21:15', place: 'TP. Hồ Chí Minh', gender: 'Nam', timezone: 'Asia/Ho_Chi_Minh' },
 ];
 
 export default function FormInput({ onSubmit, isLoading, localLoading, user }: FormInputProps) {
@@ -24,21 +41,25 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
   const [time, setTime] = useState('12:00');
   const [place, setPlace] = useState('');
   const [gender, setGender] = useState<'Nam' | 'Nữ'>('Nam');
+  const [timezone, setTimezone] = useState('Asia/Ho_Chi_Minh');
   const [savedProfiles, setSavedProfiles] = useState<UserProfile[]>([]);
+  const [justSaved, setJustSaved] = useState(false);
+  const [tzOpen, setTzOpen] = useState(false);
+  const tzRef = useRef<HTMLDivElement>(null);
+  const profileIdRef = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
-    loadProfiles();
-  }, [user]);
+    const fn = (e: MouseEvent) => {
+      if (tzRef.current && !tzRef.current.contains(e.target as Node)) setTzOpen(false);
+    };
+    document.addEventListener('mousedown', fn);
+    return () => document.removeEventListener('mousedown', fn);
+  }, []);
 
-  const loadProfiles = async () => {
+  const loadProfiles = useCallback(async () => {
     if (user) {
       try {
-        const q = query(collection(db, 'history'), where('userId', '==', user.uid));
-        const snap = await getDocs(q);
-        const items: UserProfile[] = [];
-        snap.forEach(docSnap => {
-          items.push(docSnap.data().profile as UserProfile);
-        });
+        const items = await fsLoadProfiles(user.uid);
         if (items.length > 0) {
           const seen = new Set<string>();
           const unique = items.filter(p => {
@@ -47,6 +68,7 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
             seen.add(key);
             return true;
           });
+          unique.forEach(p => { if (p.profileId) profileIdRef.current.set(p.name.toLowerCase(), p.profileId); });
           setSavedProfiles(unique);
           return;
         }
@@ -59,7 +81,8 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
     const raw = localStorage.getItem('SAVED_OMNIFATE_PROFILES');
     if (raw) {
       try {
-        setSavedProfiles(JSON.parse(raw));
+        const parsed: UserProfile[] = JSON.parse(raw);
+        setSavedProfiles(parsed.map(p => ({ ...p, timezone: p.timezone || 'Asia/Ho_Chi_Minh' })));
       } catch {
         setSavedProfiles(PRESET_PROFILES);
       }
@@ -67,63 +90,69 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
       setSavedProfiles(PRESET_PROFILES);
       localStorage.setItem('SAVED_OMNIFATE_PROFILES', JSON.stringify(PRESET_PROFILES));
     }
-  };
+  }, [user]);
 
-  const handleSaveProfile = async () => {
+  useEffect(() => {
+    loadProfiles();
+  }, [loadProfiles]);
+
+  const handleSaveProfile = async (): Promise<string | undefined> => {
     if (!name || !dob || !place) return;
-    const newProfile: UserProfile = { name, dob, time, place, gender };
-    const exists = savedProfiles.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
-    let updated: UserProfile[] = [];
-    if (exists >= 0) {
-      updated = [...savedProfiles];
-      updated[exists] = newProfile;
-    } else {
-      updated = [newProfile, ...savedProfiles];
+
+    const key = name.toLowerCase();
+    let pid = profileIdRef.current.get(key);
+    if (!pid) {
+      const existing = savedProfiles.find(p => p.name.toLowerCase() === key);
+      pid = existing?.profileId;
     }
-    setSavedProfiles(updated);
+
+    const newProfile: UserProfile = { name, dob, time, place, gender, timezone, profileId: pid };
 
     if (user) {
       try {
-        const q = query(collection(db, 'history'), where('userId', '==', user.uid));
-        const snap = await getDocs(q);
-        const deletePromises: Promise<void>[] = [];
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-          if ((data.profile as UserProfile).name.toLowerCase() === name.toLowerCase()) {
-            deletePromises.push(deleteDoc(doc(db, 'history', docSnap.id)));
+        const resultPid = await fsSaveProfile(user.uid, newProfile);
+        profileIdRef.current.set(key, resultPid);
+
+        const updatedProfile: UserProfile = { ...newProfile, profileId: resultPid };
+        setSavedProfiles(prev => {
+          const idx = prev.findIndex(p => p.name.toLowerCase() === key);
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = updatedProfile;
+            return next;
           }
+          return [updatedProfile, ...prev];
         });
-        await Promise.all(deletePromises);
-        await addDoc(collection(db, 'history'), {
-          userId: user.uid,
-          profile: newProfile,
-          createdAt: new Date().toISOString(),
-        });
+        return resultPid;
       } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, 'history');
+        console.warn('Could not save profile to cloud:', err);
       }
     } else {
+      const updated: UserProfile[] = (() => {
+        const idx = savedProfiles.findIndex(p => p.name.toLowerCase() === key);
+        if (idx >= 0) {
+          const next = [...savedProfiles];
+          next[idx] = newProfile;
+          return next;
+        }
+        return [newProfile, ...savedProfiles];
+      })();
+      setSavedProfiles(updated);
       localStorage.setItem('SAVED_OMNIFATE_PROFILES', JSON.stringify(updated));
+      return pid;
     }
   };
 
-  const handleDeleteProfile = async (profileName: string, e: React.MouseEvent) => {
+  const handleDeleteProfile = async (profile: UserProfile, e: React.MouseEvent) => {
     e.stopPropagation();
-    const updated = savedProfiles.filter(p => p.name !== profileName);
+    const key = profile.name.toLowerCase();
+    profileIdRef.current.delete(key);
+    const updated = savedProfiles.filter(p => p.name !== profile.name);
     setSavedProfiles(updated);
 
-    if (user) {
+    if (user && profile.profileId) {
       try {
-        const q = query(collection(db, 'history'), where('userId', '==', user.uid));
-        const snap = await getDocs(q);
-        const del: Promise<void>[] = [];
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-          if ((data.profile as UserProfile).name === profileName) {
-            del.push(deleteDoc(doc(db, 'history', docSnap.id)));
-          }
-        });
-        await Promise.all(del);
+        await fsDeleteProfile(profile.profileId);
       } catch (err) {
         console.warn('Could not delete cloud profile:', err);
       }
@@ -138,18 +167,26 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
     setTime(p.time);
     setPlace(p.place);
     setGender(p.gender);
+    setTimezone(p.timezone || 'Asia/Ho_Chi_Minh');
   };
 
   const handleSubmitWithAI = async () => {
     if (!name || !dob || !time || !place) return;
+    const pid = await handleSaveProfile();
+    onSubmit({ name, dob, time, place, gender, timezone, profileId: pid || profileIdRef.current.get(name.toLowerCase()) }, true);
+  };
+
+  const handleSaveOnly = async () => {
+    if (!name || !dob || !time || !place) return;
     await handleSaveProfile();
-    onSubmit({ name, dob, time, place, gender }, true);
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2000);
   };
 
   const handleSubmitLocalOnly = async () => {
     if (!name || !dob || !time || !place) return;
-    await handleSaveProfile();
-    onSubmit({ name, dob, time, place, gender }, false);
+    const pid = await handleSaveProfile();
+    onSubmit({ name, dob, time, place, gender, timezone, profileId: pid || profileIdRef.current.get(name.toLowerCase()) }, false);
   };
 
   return (
@@ -160,7 +197,13 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
             <h3 className="font-display text-lg font-bold text-amber-400 flex items-center gap-2">
               <Heart className="w-5 h-5 text-amber-400 fill-amber-400/20" />Thân Chủ Đã Lưu
             </h3>
-            <span className="text-xs bg-white/5 border border-white/10 px-2 py-1 rounded-full text-white/60 font-mono">{savedProfiles.length} hồ sơ</span>
+            <div className="flex items-center gap-2">
+              <button id="btn-new-profile" type="button" onClick={() => { setName(''); setDob(''); setTime('12:00'); setPlace(''); setGender('Nam'); setTimezone('Asia/Ho_Chi_Minh'); }}
+                className="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded-full text-white/60 hover:text-white transition-all font-mono cursor-pointer flex items-center gap-1">
+                <span className="text-xs leading-none">＋</span> Thêm
+              </button>
+              <span className="text-xs bg-white/5 border border-white/10 px-2 py-1 rounded-full text-white/60 font-mono">{savedProfiles.length} hồ sơ</span>
+            </div>
           </div>
           {user && <span className="text-[10px] text-emerald-400 mb-3 block font-mono">☁️ Đã đồng bộ đám mây</span>}
           <p className="text-white/40 text-xs mb-4">Chọn nhanh hồ sơ mẫu hoặc nhấp vào để khởi chạy tức khắc biểu đồ thần học.</p>
@@ -182,7 +225,7 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
                     <span>📍 {p.place}</span>
                   </div>
                 </div>
-                <button id={`btn-del-${p.name.replace(/\s+/g, '-')}`} type="button" onClick={(e) => handleDeleteProfile(p.name, e)}
+                <button id={`btn-del-${p.name.replace(/\s+/g, '-')}`} type="button" onClick={(e) => handleDeleteProfile(p, e)}
                   className="p-1 rounded-lg text-white/30 hover:text-rose-400 hover:bg-white/5 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
               </div>
             ))}
@@ -229,14 +272,50 @@ export default function FormInput({ onSubmit, isLoading, localLoading, user }: F
               className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white transition-all outline-none" />
           </div>
 
-          <div className="space-y-1.5 md:col-span-2">
-            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-warm-amber" /> Nơi sinh (Thành phố / Tỉnh thành) <span className="text-rose-500">*</span></label>
-            <input id="input-place" type="text" required value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Nhập tỉnh thành sinh, ví dụ: Quảng Ninh"
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-warm-amber" /> Nơi sinh <span className="text-rose-500">*</span></label>
+            <input id="input-place" type="text" required value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Ví dụ: Quảng Ninh"
               className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 transition-all outline-none" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-white/60 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-warm-amber" /> Múi giờ</label>
+            <div className="relative" ref={tzRef}>
+              <button id="input-timezone" type="button" onClick={() => setTzOpen(v => !v)}
+                className="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white transition-all outline-none cursor-pointer flex items-center justify-between gap-1.5">
+                <span className="truncate">{timezone.replace(/_/g, ' ')}</span>
+                <ChevronDown className={`w-4 h-4 text-white/30 shrink-0 transition-transform duration-200 ${tzOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {tzOpen && (
+                <div className="absolute z-50 top-full mt-1 left-0 right-0 rounded-xl max-h-56 overflow-y-auto shadow-2xl border border-white/10 bg-[#0a0a0a]/95 backdrop-blur-xl p-1">
+                  {COMMON_TZS.map(tz => (
+                    <button key={tz} type="button" onClick={() => { setTimezone(tz); setTzOpen(false); }}
+                      className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                        tz === timezone
+                          ? 'text-warm-amber bg-warm-amber/[0.12] font-medium'
+                          : 'text-white/60 hover:text-white hover:bg-white/[0.06]'
+                      }`}>
+                      <span className="truncate">{tz}</span>
+                      <span className="text-[10px] font-mono shrink-0">{tzOffset(tz)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button id="btn-save" type="button" onClick={handleSaveOnly}
+            disabled={isLoading || localLoading || !name || !dob || !time || !place}
+            className="font-display glass-btn text-white/60 hover:text-white rounded-xl py-3 px-3 font-bold text-sm tracking-wide transition-all shadow-md active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+            <Save className="w-4 h-4" /> Lưu
+          </button>
+          {justSaved && (
+            <div className="fixed top-5 right-5 z-50 bg-emerald-600/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400/30 text-sm font-medium tracking-wide animate-slide-down flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-emerald-400 text-black flex items-center justify-center text-xs font-bold">✓</span>
+              Đã lưu hồ sơ <strong>{name}</strong>
+            </div>
+          )}
           <button id="btn-local-calc" type="button" onClick={handleSubmitLocalOnly}
             disabled={isLoading || localLoading || !name || !dob || !time || !place}
             className="flex-1 font-display glass-btn text-white/80 hover:text-white rounded-xl py-3 px-4 font-bold text-sm tracking-wide transition-all shadow-md active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">📊 Lập Bản Đồ Bản Mệnh</button>

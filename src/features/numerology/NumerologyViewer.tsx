@@ -98,7 +98,7 @@ export default memo(function NumerologyViewer({ data, aiInterpretation, profile 
           <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-warm-amber/10 select-none group-hover:scale-110 transition-transform">
             {data.lifePath}
           </div>
-          <span className="text-xs text-warm-amber font-mono tracking-wider block uppercase">Chỉ Số Đường Đời (Life Path)</span>
+          <span className="text-xs text-warm-amber font-mono tracking-wider block uppercase">Chỉ Số Đường Đời</span>
           <h4 className="text-3xl font-display font-bold text-white mt-1">{data.lifePath}</h4>
           <p className="text-xs text-white/40 mt-2 leading-relaxed">Mô tả hành trình nguyên bản lớn nhất, thế mạnh sẵn có và bài học tiến hóa tâm linh của bạn trong kiếp sống này.</p>
         </div>
@@ -107,7 +107,7 @@ export default memo(function NumerologyViewer({ data, aiInterpretation, profile 
           <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-warm-amber/10 select-none group-hover:scale-110 transition-transform">
             {data.destiny}
           </div>
-          <span className="text-xs text-warm-amber font-mono tracking-wider block uppercase">Chủ Chỉ Sứ Mệnh (Destiny)</span>
+          <span className="text-xs text-warm-amber font-mono tracking-wider block uppercase">Chủ Chỉ Sứ Mệnh</span>
           <h4 className="text-3xl font-display font-bold text-white mt-1">{data.destiny}</h4>
           <p className="text-xs text-white/40 mt-2 leading-relaxed">Được cấu thành từ làn sóng rung động họ tên khai sinh. Biệt đãi cho năng lượng phụng sự, tài năng nghề nghiệp lớn.</p>
         </div>
@@ -116,7 +116,7 @@ export default memo(function NumerologyViewer({ data, aiInterpretation, profile 
           <div className="absolute top-0 right-0 p-3 text-7xl font-mono text-amber-500/10 select-none group-hover:scale-110 transition-transform">
             {data.soul}
           </div>
-          <span className="text-xs text-amber-400 font-mono tracking-wider block uppercase">Nội tâm Linh hồn (Soul Urge)</span>
+          <span className="text-xs text-amber-400 font-mono tracking-wider block uppercase">Nội Tâm Linh Hồn</span>
           <h4 className="text-3xl font-display font-bold text-white mt-1">{data.soul}</h4>
           <p className="text-xs text-white/40 mt-2 leading-relaxed">Phản chiếu sâu kín khát vọng tinh tủy, món quà tinh thần tiềm thức mà linh hồn của bạn thực sự khao khát đạt đến.</p>
         </div>
@@ -126,7 +126,7 @@ export default memo(function NumerologyViewer({ data, aiInterpretation, profile 
         <div className="glass-card rounded-2xl p-6 hover:translate-y-0">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="font-display text-lg font-bold text-white/80">Biểu Đồ Ngày Sinh (Birth Grid Matrix)</h4>
+              <h4 className="font-display text-lg font-bold text-white/80">Biểu Đồ Ngày Sinh</h4>
               <p className="text-xs text-white/40 mt-0.5">Phỏng dựng phân bổ tinh vận bản thể của ngày sinh.</p>
             </div>
             <span id="tooltip-help" title="Nhấp vào từng ô để tra cứu các chỉ số xuất hiện." className="tooltip">

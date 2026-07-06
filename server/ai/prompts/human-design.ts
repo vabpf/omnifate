@@ -1,6 +1,6 @@
 export function buildHumanDesignPrompt(
   name: string, dob: string, time: string, place: string, gender: string,
-  hdData: { type: string; authority: string; strategy: string; profile: string; centers: any[]; activeGates?: number[]; definedChannels?: string[] }
+  hdData: { type: string; authority: string; strategy: string; profile: string; centers: any[]; activeGates?: number[]; definedChannels?: string[]; incarnationCross?: any }
 ): string {
   const NOT_SELF: Record<string, string> = {
     Generator: 'Thất vọng (Frustration)', 'Manifesting Generator': 'Thất vọng (Frustration)',
@@ -35,6 +35,7 @@ Dữ liệu Human Design đã tính:
 - Chữ ký (Signature): ${SIGNATURE[hdData.type] || '?'}
 ${gateStr}
 ${channelStr}
+${hdData.incarnationCross ? `- Thập tự Giáng sinh (Incarnation Cross): ${hdData.incarnationCross.type} — Mặt Trời Nhân cách cổng ${hdData.incarnationCross.personalitySun.gate}.${hdData.incarnationCross.personalitySun.line}, Trái Đất Nhân cách cổng ${hdData.incarnationCross.personalityEarth.gate}.${hdData.incarnationCross.personalityEarth.line}` : ''}
 - Các trung tâm năng lượng:
 ${centerLines}
 

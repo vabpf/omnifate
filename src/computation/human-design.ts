@@ -1,17 +1,18 @@
 import { Engine } from 'caelus';
 import { embeddedData } from 'caelus/data-embedded';
-import { HumanDesignData, HumanDesignCenter } from '../types';
+import { HumanDesignData, HumanDesignCenter, IncarnationCross } from '../types';
+import { getUtcOffset } from './shared';
 
 export const CENTER_CONFIG = [
-  { id: 'head', name: 'Trung Tâm Đầu (Head)', type: 'Head', color: '#A855F7' },
-  { id: 'ajna', name: 'Trung Tâm Ajna (Mind)', type: 'Ajna', color: '#3B82F6' },
-  { id: 'throat', name: 'Trung Tâm Cổ Họng (Throat)', type: 'Throat', color: '#06B6D4' },
-  { id: 'g_center', name: 'Trung Tâm Bản Ngã (G)', type: 'G-Center', color: '#10B981' },
-  { id: 'heart', name: 'Trung Tâm Tim (Ego)', type: 'Heart', color: '#EAB308' },
-  { id: 'sacral', name: 'Trung Tâm Xương Cùng (Sacral)', type: 'Sacral', color: '#F97316' },
-  { id: 'root', name: 'Trung Tâm Gốc (Root)', type: 'Root', color: '#EF4444' },
-  { id: 'spleen', name: 'Trung Tâm Lách (Spleen)', type: 'Spleen', color: '#EC4899' },
-  { id: 'solar_plexus', name: 'Trung Tâm Đám Rối (Solar Plexus)', type: 'Solar Plexus', color: '#6366F1' },
+  { id: 'head', name: 'Trung Tâm Đầu', type: 'Head', color: '#A855F7' },
+  { id: 'ajna', name: 'Trung Tâm Ajna', type: 'Ajna', color: '#3B82F6' },
+  { id: 'throat', name: 'Trung Tâm Cổ Họng', type: 'Throat', color: '#06B6D4' },
+  { id: 'g_center', name: 'Trung Tâm Bản Ngã', type: 'G-Center', color: '#10B981' },
+  { id: 'heart', name: 'Trung Tâm Tim', type: 'Heart', color: '#EAB308' },
+  { id: 'sacral', name: 'Trung Tâm Xương Cùng', type: 'Sacral', color: '#F97316' },
+  { id: 'root', name: 'Trung Tâm Gốc', type: 'Root', color: '#EF4444' },
+  { id: 'spleen', name: 'Trung Tâm Lách', type: 'Spleen', color: '#EC4899' },
+  { id: 'solar_plexus', name: 'Trung Tâm Đám Rối', type: 'Solar Plexus', color: '#6366F1' },
 ];
 
 // Rave Mandala gate sequence (ecliptic order, 0° = gate 41)
@@ -80,11 +81,12 @@ function getEngine(): Engine {
   return engine;
 }
 
-export function computeHumanDesign(dob: string, time: string): HumanDesignData {
+export function computeHumanDesign(dob: string, time: string, timezone = 'Asia/Ho_Chi_Minh'): HumanDesignData {
   const [year, month, day] = dob.split('-').map(Number);
   const [hour] = time.split(':').map(Number);
 
-  const utc = new Date(Date.UTC(year, month - 1, day, hour - 7, 0, 0));
+  const offset = getUtcOffset(year, month, day, hour, timezone);
+  const utc = new Date(Date.UTC(year, month - 1, day, hour - offset, 0, 0));
   const e = getEngine();
 
   const jdUt = (jd(utc.getUTCFullYear(), utc.getUTCMonth() + 1, utc.getUTCDate(),
@@ -162,29 +164,45 @@ export function computeHumanDesign(dob: string, time: string): HumanDesignData {
   const sp = channelSet.has('solar_plexus');
   const sac = channelSet.has('sacral');
   const spl = channelSet.has('spleen');
-  if (sp) authority = 'Emotional (Cảm xúc Linh cảm)';
-  else if (sac) authority = 'Sacral (Xương cùng / Trực giác)';
-  else if (spl) authority = 'Splenic (Lá lách / Trực giác nhạy bén)';
-  else if (channelSet.has('heart')) authority = 'Ego (Ý chí / Bản ngã)';
-  else if (type === 'Reflector') authority = 'Mặt Trăng (Lunar Cycle)';
-  else authority = 'Mental / Self-Projected (Lý trí / Tự phản chiếu)';
+  if (sp) authority = 'Cảm xúc Linh cảm';
+  else if (sac) authority = 'Xương cùng / Trực giác';
+  else if (spl) authority = 'Lá lách / Trực giác nhạy bén';
+  else if (channelSet.has('heart')) authority = 'Ý chí / Bản ngã';
+  else if (type === 'Reflector') authority = 'Mặt Trăng';
+  else authority = 'Lý trí / Tự phản chiếu';
 
   // Strategy
   const strategies: Record<string, string> = {
-    Generator: 'Chờ đợi để Phản hồi (To Respond)',
-    'Manifesting Generator': 'Phản hồi + Thông báo (Respond + Inform)',
-    Manifestor: 'Thông báo và Hành động (Inform and Initiate)',
-    Projector: 'Chờ đợi lời Mời gọi (Wait for the Invitation)',
-    Reflector: 'Chờ đợi 28 ngày chu kỳ Mặt Trăng (Wait a Lunar Cycle)',
+    Generator: 'Chờ đợi để Phản hồi',
+    'Manifesting Generator': 'Phản hồi và Thông báo',
+    Manifestor: 'Thông báo và Hành động',
+    Projector: 'Chờ đợi lời Mời gọi',
+    Reflector: 'Chờ đợi 28 ngày chu kỳ Mặt Trăng',
   };
   const strategy = strategies[type] || '';
 
   // Profile
-  const pGate = lonToGateOnly(persLons['sun']);
-  const dGate = lonToGateOnly(desLons['sun']);
-  const pLine = lineOf(persLons['sun']);
-  const dLine = lineOf(desLons['sun']);
-  const profile = profileKey(pLine, dLine);
+  const pSunGate = lonToGateOnly(persLons['sun']);
+  const dSunGate = lonToGateOnly(desLons['sun']);
+  const pSunLine = lineOf(persLons['sun']);
+  const dSunLine = lineOf(desLons['sun']);
+  const profile = profileKey(pSunLine, dSunLine);
+
+  // Incarnation Cross
+  const pEarthGate = lonToGateOnly(persLons['earth']);
+  const pEarthLine = lineOf(persLons['earth']);
+  const dEarthGate = lonToGateOnly(desLons['earth']);
+  const dEarthLine = lineOf(desLons['earth']);
+  const isRightAngle = pSunGate !== dSunGate && pEarthGate !== dEarthGate;
+  const isJuxtaposition = pSunGate === dSunGate && pEarthGate === dEarthGate;
+  const crossType = isJuxtaposition ? 'Juxtaposition' : isRightAngle ? 'Right Angle' : 'Left Angle';
+  const incarnationCross: IncarnationCross = {
+    type: crossType,
+    personalitySun: { gate: pSunGate, line: pSunLine },
+    personalityEarth: { gate: pEarthGate, line: pEarthLine },
+    designSun: { gate: dSunGate, line: dSunLine },
+    designEarth: { gate: dEarthGate, line: dEarthLine },
+  };
 
   return {
     type,
@@ -194,6 +212,7 @@ export function computeHumanDesign(dob: string, time: string): HumanDesignData {
     centers,
     activeGates: Array.from(activeGates).sort((a, b) => a - b),
     definedChannels,
+    incarnationCross,
   };
 }
 

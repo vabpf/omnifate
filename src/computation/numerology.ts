@@ -35,7 +35,7 @@ function detectKarmicDebts(n: number): number[] {
   return debts;
 }
 
-export function computeNumerology(name: string, dob: string): NumerologyData {
+export function computeNumerology(name: string, dob: string, currentYear = new Date().getFullYear()): NumerologyData {
   const normName = removeVietnameseTones(name).replace(/[^a-z]/g, '');
   const [yearStr, monthStr, dayStr] = dob.split('-');
   const year = parseInt(yearStr);
@@ -67,7 +67,6 @@ export function computeNumerology(name: string, dob: string): NumerologyData {
   const attitude = reduceNum(day + month, false);
   const maturity = reduceNum(lifePath + destiny, true);
 
-  const currentYear = new Date().getFullYear();
   const pDay = reduceNum(day, false);
   const pMonth = reduceNum(month, false);
   const pYear = reduceNum(currentYear, false);

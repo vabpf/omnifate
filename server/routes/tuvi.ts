@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import { getGeminiClient } from '../ai/client';
 import { buildTuViPrompt, tuviSystemInstruction } from '../ai/prompts/tuvi';
+import { requireFields } from './validate';
 
 const router = Router();
 
 router.post('/api/ai/tuvi', async (req, res) => {
   try {
+    if (!requireFields(req, res, ['name', 'dob', 'tuviData'])) return;
     const { name, dob, time, place, gender, tuviData } = req.body;
-    if (!name || !dob || !tuviData) {
-      return res.status(400).json({ error: 'Thiếu thông tin đầu vào.' });
-    }
 
     const ai = getGeminiClient();
     const prompt = buildTuViPrompt(name, dob, time, place, gender, tuviData);

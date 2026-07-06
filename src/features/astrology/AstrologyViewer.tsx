@@ -89,7 +89,7 @@ export default memo(function AstrologyViewer({ data, profile, aiInterpretation }
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card rounded-xl p-5 flex items-center justify-between hover:border-amber-400/30">
           <div>
-            <span className="text-[10px] text-amber-400 font-mono tracking-widest block uppercase">CUNG MẶT TRỜI (SUN)</span>
+            <span className="text-[10px] text-amber-400 font-mono tracking-widest block uppercase">CUNG MẶT TRỜI</span>
             <h4 className="text-xl font-display font-bold text-white mt-1">{data.sunSign}</h4>
             <p className="text-xs text-white/40 mt-1 pb-1">Bản ngã chủ đạo, ý thức, ý chí vươn lên khát vọng danh tiếng.</p>
           </div>
@@ -97,7 +97,7 @@ export default memo(function AstrologyViewer({ data, profile, aiInterpretation }
         </div>
         <div className="glass-card rounded-xl p-5 flex items-center justify-between hover:border-warm-amber/30">
           <div>
-            <span className="text-[10px] text-warm-amber font-mono tracking-widest block uppercase">CUNG MẶT TRĂNG (MOON)</span>
+            <span className="text-[10px] text-warm-amber font-mono tracking-widest block uppercase">CUNG MẶT TRĂNG</span>
             <h4 className="text-xl font-display font-bold text-white mt-1">{data.moonSign}</h4>
             <p className="text-xs text-white/40 mt-1 pb-1">Tiềm thức sâu xa, thói quen cảm xúc, thế giới nội tâm.</p>
           </div>
@@ -105,7 +105,7 @@ export default memo(function AstrologyViewer({ data, profile, aiInterpretation }
         </div>
         <div className="glass-card rounded-xl p-5 flex items-center justify-between hover:border-pink-400/30">
           <div>
-            <span className="text-[10px] text-pink-400 font-mono tracking-widest block uppercase">CUNG MỌC (ASCENDANT)</span>
+            <span className="text-[10px] text-pink-400 font-mono tracking-widest block uppercase">CUNG MỌC</span>
             <h4 className="text-xl font-display font-bold text-white mt-1">{data.ascendant}</h4>
             <p className="text-xs text-white/40 mt-1 pb-1">Lăng kính mặt nạ xã hội, dáng điệu, ấn tượng đầu tiên.</p>
           </div>
@@ -118,7 +118,7 @@ export default memo(function AstrologyViewer({ data, profile, aiInterpretation }
           <div className="w-full flex items-center justify-between mb-4">
             <div>
               <h4 className="font-display text-base font-bold text-white/80 flex items-center gap-2">
-                <Compass className="w-5 h-5 text-warm-amber" />Vòng Tròn Bản Đồ Sao (Natal Chart Wheel)
+                <Compass className="w-5 h-5 text-warm-amber" />Vòng Tròn Bản Đồ Sao
               </h4>
               <p className="text-[11px] text-white/40 mt-0.5">Xác vị trí các hành tinh trong hoàng đạo lúc sinh.</p>
             </div>

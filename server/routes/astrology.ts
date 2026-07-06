@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import { getGeminiClient } from '../ai/client';
 import { buildAstrologyPrompt, astrologySystemInstruction } from '../ai/prompts/astrology';
+import { requireFields } from './validate';
 
 const router = Router();
 
 router.post('/api/ai/astrology', async (req, res) => {
   try {
+    if (!requireFields(req, res, ['name', 'dob', 'astroData'])) return;
     const { name, dob, time, place, gender, astroData } = req.body;
-    if (!name || !dob || !astroData) {
-      return res.status(400).json({ error: 'Thiếu thông tin đầu vào.' });
-    }
 
     const ai = getGeminiClient();
     const prompt = buildAstrologyPrompt(name, dob, time, place, gender, astroData);

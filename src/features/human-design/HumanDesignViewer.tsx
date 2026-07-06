@@ -61,22 +61,22 @@ export default memo(function HumanDesignViewer({ data, profile, aiInterpretation
     <div className="space-y-8 animate-fade-in">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card rounded-xl p-4">
-          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">LOẠI NĂNG LƯỢNG (TYPE)</span>
+          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">LOẠI NĂNG LƯỢNG</span>
           <h4 className="text-sm font-bold text-white/80 mt-1 truncate">{data.type}</h4>
           <span className="text-[10px] text-warm-amber font-mono block mt-1">Hào quang dồi dào</span>
         </div>
         <div className="glass-card rounded-xl p-4">
-          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">HỒ SƠ (PROFILE)</span>
+          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">HỒ SƠ</span>
           <h4 className="text-sm font-bold text-white/80 mt-1 truncate">{data.profile.split(' ')[0]}</h4>
           <span className="text-[10px] text-warm-amber font-mono block mt-1 truncate">{data.profile.split(' ')[1] || 'Vai diễn cuộc đời'}</span>
         </div>
         <div className="glass-card rounded-xl p-4">
-          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">CHIẾN LƯỢC (STRATEGY)</span>
+          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">CHIẾN LƯỢC</span>
           <h4 className="text-sm font-bold text-white/80 mt-1 truncate">{data.strategy}</h4>
           <span className="text-[10px] text-amber-400 font-mono block mt-1">Cách thu hút cơ hội</span>
         </div>
         <div className="glass-card rounded-xl p-4">
-          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">SỰ QUYẾT ĐỊNH (AUTHORITY)</span>
+          <span className="text-[9px] text-white/40 font-mono tracking-wider block uppercase">SỰ QUYẾT ĐỊNH</span>
           <h4 className="text-sm font-bold text-white/80 mt-1 truncate">{data.authority.split(' ')[0]}</h4>
           <span className="text-[10px] text-cyan-400 font-mono block mt-1 truncate">{data.authority.split(' ').slice(1).join(' ') || 'Thẩm quyền nội tại'}</span>
         </div>
@@ -86,7 +86,7 @@ export default memo(function HumanDesignViewer({ data, profile, aiInterpretation
         <div className="glass-card rounded-2xl p-6 flex flex-col items-center hover:translate-y-0">
           <div className="w-full flex items-center justify-between mb-4">
             <div>
-              <h4 className="font-display text-base font-bold text-white/80">Đồ Hình Bodygraph (9 Năng Lượng Luân Xa)</h4>
+              <h4 className="font-display text-base font-bold text-white/80">Đồ Hình Nhân Dạng (9 Năng Lượng Luân Xa)</h4>
               <p className="text-xs text-white/40 mt-0.5">Vùng năng lượng xác định (Có màu) và chưa xác định (Trắng trống).</p>
             </div>
             <span id="tooltip-hd-centers" title="Nhấp vào từng vùng hình lăng trụ trong đồ hình để hiển thị ý nghĩa luân xa." className="tooltip cursor-pointer">
@@ -153,7 +153,7 @@ export default memo(function HumanDesignViewer({ data, profile, aiInterpretation
                 <div className="flex items-center justify-between mb-1.5">
                   <h5 className="text-xs font-bold font-display text-amber-500 uppercase flex items-center gap-1.5"><span>✦</span> {selectedCenter.name}</h5>
                   <span className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-bold ${selectedCenter.defined ? 'bg-warm-amber/10 text-warm-amber border border-warm-amber/10' : 'bg-white/5 text-white/40 border border-white/10'}`}>
-                    {selectedCenter.defined ? 'XÁC ĐỊNH (DEFINED)' : 'CHƯA XÁC ĐỊNH (OPEN)'}
+                    {selectedCenter.defined ? 'XÁC ĐỊNH' : 'CHƯA XÁC ĐỊNH'}
                   </span>
                 </div>
                 <p className="text-xs text-white/60 mt-2 leading-relaxed">

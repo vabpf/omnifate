@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import { getGeminiClient } from '../ai/client';
 import { buildHumanDesignPrompt, humanDesignSystemInstruction } from '../ai/prompts/human-design';
+import { requireFields } from './validate';
 
 const router = Router();
 
 router.post('/api/ai/human-design', async (req, res) => {
   try {
+    if (!requireFields(req, res, ['name', 'dob', 'hdData'])) return;
     const { name, dob, time, place, gender, hdData } = req.body;
-    if (!name || !dob || !hdData) {
-      return res.status(400).json({ error: 'Thiếu thông tin đầu vào.' });
-    }
 
     const ai = getGeminiClient();
     const prompt = buildHumanDesignPrompt(name, dob, time, place, gender, hdData);

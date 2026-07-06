@@ -1,5 +1,6 @@
 import { Solar, EightChar } from 'lunar-typescript';
 import { TuViPalace } from '../types';
+import { getUtcOffset } from './shared';
 
 export const PALACE_NAMES = [
   'Mệnh (Bản Thân)', 'Phụ Mẫu (Cha Mẹ)', 'Phúc Đức (Gia Tiên)',
@@ -16,6 +17,8 @@ const BRANCHES_CN = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '�
 
 const DƯƠNG_STEMS = new Set(['Giáp', 'Bính', 'Mậu', 'Canh', 'Nhâm']);
 const ÂM_STEMS = new Set(['Ất', 'Đinh', 'Kỷ', 'Tân', 'Quý']);
+
+const CUC_ELEMENTS: Record<number, string> = { 2: 'Thủy', 3: 'Mộc', 4: 'Kim', 5: 'Thổ', 6: 'Hỏa' };
 
 // 14 Chính Tinh — Tử Vi system (counterclockwise from Tử Vi)
 const TUVI_STARS: [string, number][] = [
@@ -44,6 +47,9 @@ const TU_HOA: Record<string, [string, string, string, string]> = {
 
 // Tràng Sinh 12 sao
 const TRANG_SINH_STARS = ['Tràng Sinh', 'Mộc Dục', 'Quan Đới', 'Lâm Quan', 'Đế Vượng', 'Suy', 'Bệnh', 'Tử', 'Mộ', 'Tuyệt', 'Thai', 'Dưỡng'];
+
+// Bác Sĩ 12 sao (Dương year → clockwise, Âm year → counter-clockwise, always start at Dần)
+const BAC_SI_STARS = ['Bác Sĩ', 'Lực Sĩ', 'Thanh Long', 'Tiểu Hao', 'Tướng Quân', 'Tấu Thư', 'Phi Liêm', 'Hỷ Thần', 'Bệnh Phù', 'Đại Hao', 'Phục Binh', 'Quan Phủ'];
 
 // Thái Tuế 12 sao (offset from year branch, counterclockwise)
 const THAI_TUE_STARS: [string, number][] = [
@@ -89,17 +95,24 @@ function trangSinhStart(cuc: number): number {
   return 2;                  // Hỏa(6)/Thổ(5) → Dần
 }
 
-export function computeTuVi(dob: string, time: string, gender: 'Nam' | 'Nữ'): TuViPalace[] {
+export function computeTuVi(dob: string, time: string, gender: 'Nam' | 'Nữ', timezone = 'Asia/Ho_Chi_Minh'): TuViPalace[] {
   const [year, month, day] = dob.split('-').map(Number);
   const [hour] = time.split(':').map(Number);
 
+  // Convert local time → UTC → UTC+7 (Vietnamese reference for lunar calendar)
+  const localOffset = getUtcOffset(year, month, day, hour, timezone);
+  const utcMs = Date.UTC(year, month - 1, day, hour - localOffset, 0, 0);
+  const refDate = new Date(utcMs + 7 * 3600000);
+  const refYear = refDate.getUTCFullYear();
+  const refMonth = refDate.getUTCMonth() + 1;
+  const refDay = refDate.getUTCDate();
+  const refHour = refDate.getUTCHours();
+
   // Tý hour: 23:00-23:59 is Late Tý → belongs to next solar day
-  const adjustedHour = hour === 23 ? -1 : hour;
-  // For Tý hour, we need to adjust the solar day. Early Tý (0-0:59) same day, Late Tý (23-23:59) next day
-  const useDay = hour === 23 ? day + 1 : day;
-  const solar = Solar.fromYmdHms(year, month, useDay, adjustedHour < 0 ? 0 : adjustedHour, 0, 0);
-  const solarForRef = Solar.fromYmdHms(year, month, day, hour < 1 ? 0 : hour, 0, 0);
-  const lunar = solarForRef.getLunar();
+  const adjustedHour = refHour === 23 ? -1 : refHour;
+  const useDay = refHour === 23 ? refDay + 1 : refDay;
+  const solar = Solar.fromYmdHms(refYear, refMonth, useDay, adjustedHour < 0 ? 0 : adjustedHour, 0, 0);
+  const lunar = solar.getLunar();
   const ec = EightChar.fromLunar(lunar);
 
   const lMonth = lunar.getMonth();
@@ -175,9 +188,17 @@ export function computeTuVi(dob: string, time: string, gender: 'Nam' | 'Nữ'): 
     thaiTueByBranch[idx].push(name);
   }
 
+  // Bác Sĩ 12 sao (Dương → clockwise, Âm → counter-clockwise, start at Dần)
+  const _isDuong = DƯƠNG_STEMS.has(yearStem);
+  const bacSiByBranch: string[][] = Array.from({ length: 12 }, () => []);
+  const bacSiDir = _isDuong ? 1 : -1;
+  for (let i = 0; i < 12; i++) {
+    const idx = (2 + i * bacSiDir + 12) % 12;
+    bacSiByBranch[idx].push(BAC_SI_STARS[i]);
+  }
+
   // Đại Vận
-  const isDuong = DƯƠNG_STEMS.has(yearStem);
-  const thuan = (isDuong && gender === 'Nam') || (!isDuong && gender === 'Nữ');
+  const thuan = (_isDuong && gender === 'Nam') || (!_isDuong && gender === 'Nữ');
   const daiVanDir = thuan ? 1 : -1;
   const daiVanStartAge = cuc;
 
@@ -187,19 +208,18 @@ export function computeTuVi(dob: string, time: string, gender: 'Nam' | 'Nữ'): 
     const palaceNameOffset = (i - mingBranchIdx + 12) % 12;
     const pName = PALACE_NAMES[palaceNameOffset];
 
-    // Phụ Tinh: Tràng Sinh + Thái Tuế (merged, deduped)
-    const phuTinh = [...new Set([...trangSinhByBranch[i], ...thaiTueByBranch[i]])];
+    // Phụ Tinh: Tràng Sinh + Thái Tuế + Bác Sĩ (merged, deduped)
+    const phuTinh = [...new Set([...trangSinhByBranch[i], ...thaiTueByBranch[i], ...bacSiByBranch[i]])];
 
     // Đại Vận for this palace
     let daiVan: { age: number; yearStart: number; yearEnd: number } | null = null;
     {
       const offset = thuan ? (i - mingBranchIdx + 12) % 12 : (mingBranchIdx - i + 12) % 12;
       const age = daiVanStartAge + offset * 10;
-      const currentYear = new Date().getFullYear();
       daiVan = {
         age,
-        yearStart: currentYear - age + cuc,
-        yearEnd: currentYear - age + cuc + 9,
+        yearStart: year + age,
+        yearEnd: year + age + 9,
       };
     }
 
@@ -209,7 +229,7 @@ export function computeTuVi(dob: string, time: string, gender: 'Nam' | 'Nữ'): 
       branch: `${palaceStems[i]} ${EARTHLY_BRANCHES[i]}`,
       majorStars: majorStars[i] || [],
       minorStars: phuTinh,
-      element: '',
+      element: CUC_ELEMENTS[cuc] || '',
       cuc,
       mingGong: mingGongStr,
       thienPhuPos,

@@ -6,7 +6,6 @@ import {
 } from 'firebase/auth';
 import {
   collection,
-  addDoc,
   getDocs,
   query,
   where,
@@ -21,10 +20,8 @@ import {
   ShieldCheck,
   History,
   Trash2,
-  Bookmark,
   Sparkles,
   X,
-  Loader2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import AuthForm from './AuthForm';
@@ -39,7 +36,6 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [savedLookups, setSavedLookups] = useState<Array<{ id: string; profile: UserProfile; createdAt: string }>>([]);
   const [lookupsLoading, setLookupsLoading] = useState(false);
-  const [isSavingCurrent, setIsSavingCurrent] = useState(false);
   const currentProfileRef = useRef(currentProfile);
   currentProfileRef.current = currentProfile;
 
@@ -58,13 +54,27 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
   const fetchSavedLookups = async (uid: string) => {
     setLookupsLoading(true);
     try {
-      const q = query(collection(db, 'history'), where('userId', '==', uid));
-      const querySnapshot = await getDocs(q);
+      const q = query(
+        collection(db, 'profiles'),
+        where('userId', '==', uid)
+      );
+      const snap = await getDocs(q);
 
-      const items: any[] = [];
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        items.push({ id: docSnap.id, profile: data.profile, createdAt: data.createdAt || '' });
+      const items: Array<{ id: string; profile: UserProfile; createdAt: string }> = [];
+      snap.forEach((d) => {
+        const data = d.data();
+        items.push({
+          id: d.id,
+          profile: {
+            name: data.name || '',
+            dob: data.dob || '',
+            time: data.time || '12:00',
+            place: data.place || '',
+            gender: data.gender || 'Nam',
+            timezone: data.timezone || 'Asia/Ho_Chi_Minh',
+          },
+          createdAt: data.createdAt?.toDate()?.toISOString() || '',
+        });
       });
 
       items.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -74,7 +84,7 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
         onSelectSavedProfile(items[0].profile);
       }
     } catch (err) {
-      console.error('Error fetching lookups:', err);
+      console.error('Error fetching profiles:', err);
     } finally {
       setLookupsLoading(false);
     }
@@ -88,45 +98,10 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
     }
   };
 
-  const handleSaveCurrentProfile = async () => {
-    if (!user || !currentProfile) return;
-    setIsSavingCurrent(true);
-
-    const exists = savedLookups.some(
-      item =>
-        item.profile.name === currentProfile.name &&
-        item.profile.dob === currentProfile.dob &&
-        item.profile.time === currentProfile.time
-    );
-
-    if (exists) {
-      setIsSavingCurrent(false);
-      alert('Hồ sơ này đã được lưu trước đó.');
-      return;
-    }
-
-    try {
-      const docRef = await addDoc(collection(db, 'history'), {
-        userId: user.uid,
-        profile: currentProfile,
-        createdAt: new Date().toISOString(),
-      });
-
-      setSavedLookups(prev => [
-        { id: docRef.id, profile: currentProfile, createdAt: new Date().toISOString() },
-        ...prev,
-      ]);
-    } catch (err) {
-      console.error('Error saving profile:', err);
-    } finally {
-      setIsSavingCurrent(false);
-    }
-  };
-
   const handleDeleteProfile = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await deleteDoc(doc(db, 'history', id));
+      await deleteDoc(doc(db, 'profiles', id));
       setSavedLookups(prev => prev.filter(item => item.id !== id));
     } catch (err) {
       console.error('Error deleting profile:', err);
@@ -142,21 +117,6 @@ export default function AuthManager({ currentProfile, onSelectSavedProfile }: Au
             <span className="font-medium hidden sm:inline">Đã đồng bộ:</span>
             <strong className="text-white max-w-[110px] truncate">{user.email}</strong>
           </div>
-
-          {currentProfile && (
-            <button
-              onClick={handleSaveCurrentProfile}
-              disabled={isSavingCurrent}
-              className="inline-flex items-center gap-1 bg-warm-amber hover:bg-warm-teal disabled:opacity-50 text-white font-medium py-1 px-2.5 rounded-lg cursor-pointer transition-all active:scale-95 text-[11px]"
-            >
-              {isSavingCurrent ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              ) : (
-                <Bookmark className="w-3 h-3 fill-white/10" />
-              )}
-              <span>Lưu hồ sơ</span>
-            </button>
-          )}
 
           <button
             onClick={handleSignOut}

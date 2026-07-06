@@ -1,13 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Global Safety Net: default-deny catch-all
+
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Global reusable helpers
     function isSignedIn() {
       return request.auth != null;
     }
@@ -16,44 +14,41 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Entity validation functions
-    function isValidUser(data) {
-      return data.keys().hasAll(['uid', 'name', 'email', 'createdAt'])
-        && data.keys().size() == 4
-        && data.uid == request.auth.uid
-        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
-        && data.email is string && data.email.size() > 0 && data.email.size() <= 150
-        && data.createdAt is string && data.createdAt.size() <= 40;
-    }
-
-    function isValidHistory(data) {
-      return data.keys().hasAll(['userId', 'profile', 'createdAt'])
-        && data.keys().size() == 3
+    function isValidProfile(data) {
+      return data.keys().hasAll(['userId', 'name', 'dob', 'time', 'place', 'gender', 'createdAt'])
+        && data.keys().size() >= 7 && data.keys().size() <= 10
         && data.userId == request.auth.uid
-        && data.profile is map
-        && data.profile.keys().hasAll(['name', 'dob', 'time', 'place', 'gender'])
-        && data.profile.keys().size() == 5
-        && data.profile.name is string && data.profile.name.size() > 0 && data.profile.name.size() <= 100
-        && data.profile.dob is string && data.profile.dob.size() >= 8 && data.profile.dob.size() <= 20
-        && data.profile.time is string && data.profile.time.size() >= 3 && data.profile.time.size() <= 10
-        && data.profile.place is string && data.profile.place.size() > 0 && data.profile.place.size() <= 200
-        && data.profile.gender is string && (data.profile.gender == 'Nam' || data.profile.gender == 'Nữ')
-        && data.createdAt is string && data.createdAt.size() <= 40;
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.dob is string && data.dob.size() >= 8 && data.dob.size() <= 20
+        && data.time is string && data.time.size() >= 3 && data.time.size() <= 10
+        && data.place is string && data.place.size() > 0 && data.place.size() <= 200
+        && data.gender is string && (data.gender == 'Nam' || data.gender == 'Nữ')
+        && (!data.keys().hasAny(['timezone']) || (data.timezone is string && data.timezone.size() > 0));
     }
 
-    // Users Collection rules
-    match /users/{userId} {
-      allow read: if isOwner(userId);
-      allow create, update: if isOwner(userId) && isValidUser(request.resource.data);
-      allow delete: if isOwner(userId);
+    function isValidReport(data) {
+      return data.keys().hasAll(['userId', 'profileId', 'profileSnapshot', 'report', 'model', 'createdAt'])
+        && data.keys().size() == 6
+        && data.userId == request.auth.uid
+        && data.profileId is string
+        && data.profileSnapshot is map
+        && data.profileSnapshot.keys().hasAll(['name', 'dob', 'time', 'place', 'gender'])
+        && data.report is map
+        && data.report.keys().hasAll(['overview', 'numerology', 'astrology', 'tuvi', 'battu', 'humanDesign', 'yearlyForecast', 'remediation'])
+        && data.model is string;
     }
 
-    // History / Saved Profiles Collection rules
-    match /history/{historyId} {
-      allow get, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && isValidHistory(request.resource.data);
-      allow update: if isSignedIn() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid && isValidHistory(request.resource.data);
+    match /profiles/{profileId} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId) && isValidProfile(request.resource.data);
+      allow update: if isOwner(request.resource.data.userId) && isValidProfile(request.resource.data);
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    match /reports/{reportId} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId) && isValidReport(request.resource.data);
+      allow delete: if isOwner(resource.data.userId);
     }
   }
 }

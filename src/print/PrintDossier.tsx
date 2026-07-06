@@ -14,8 +14,8 @@ export default function PrintDossier({ profile, numData, astData, tuviData, batt
   return (
     <div className="space-y-12 text-slate-950 font-sans p-6 text-xs max-w-4xl mx-auto printable-dossier select-none">
       <div className="text-center space-y-3 pb-8 border-b-2 border-slate-900">
-        <h1 className="text-3xl font-display font-medium tracking-tight">OMNIFATE DOSSIER</h1>
-        <p className="text-sm font-mono tracking-widest uppercase">Báo cáo Mệnh tài Giao Thoa Việt - Hạnh Toàn Diện</p>
+        <h1 className="text-3xl font-display font-medium tracking-tight">OMNIFATE – HỒ SƠ MỆNH TÀI</h1>
+        <p className="text-sm font-mono tracking-widest uppercase">Báo cáo giao thoa thiên mệnh toàn diện</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-100 border border-slate-300 p-4 rounded-xl text-left font-mono mt-4">
           <div>👤 <strong>Họ tên:</strong> {profile.name}</div>
           <div>📅 <strong>Ngày sinh (Dương):</strong> {profile.dob.split('-').reverse().join('/')}</div>
@@ -99,11 +99,11 @@ export default function PrintDossier({ profile, numData, astData, tuviData, batt
       </div>
 
       <div className="space-y-4 break-inside-avoid">
-        <h2 className="text-lg font-display font-bold border-b border-slate-900 pb-1">6. THIẾT KẾ NHÂN DẠNG (HUMAN DESIGN)</h2>
+        <h2 className="text-lg font-display font-bold border-b border-slate-900 pb-1">6. THIẾT KẾ NHÂN DẠNG</h2>
         <div className="grid grid-cols-3 gap-2 bg-slate-100 p-3 rounded border">
-          <div>🌟 <strong>Type:</strong> {hdData.type}</div>
-          <div>💠 <strong>Authority:</strong> {hdData.authority}</div>
-          <div>🕯️ <strong>Strategy:</strong> {hdData.strategy}</div>
+          <div>🌟 <strong>Loại:</strong> {hdData.type}</div>
+          <div>💠 <strong>Thẩm quyền:</strong> {hdData.authority}</div>
+          <div>🕯️ <strong>Chiến lược:</strong> {hdData.strategy}</div>
         </div>
         {aiReport?.humanDesign && (
           <div className="space-y-2 mt-2 leading-relaxed">

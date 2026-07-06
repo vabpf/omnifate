@@ -1,5 +1,6 @@
 import { Solar, EightChar } from 'lunar-typescript';
 import type { BattuData } from '../types';
+import { getUtcOffset } from './shared';
 
 const STEM_ELEMENT: Record<string, { vi: string; element: string }> = {
   '甲': { vi: 'Giáp', element: 'Mộc' }, '乙': { vi: 'Ất', element: 'Mộc' },
@@ -27,11 +28,15 @@ function stemElement(cn: string): string {
   return STEM_ELEMENT[cn]?.element || '';
 }
 
-export function computeBattu(dob: string, time: string): BattuData {
+export function computeBattu(dob: string, time: string, timezone = 'Asia/Ho_Chi_Minh'): BattuData {
   const [year, month, day] = dob.split('-').map(Number);
   const [hour] = time.split(':').map(Number);
 
-  const solar = Solar.fromYmdHms(year, month, day, hour, 0, 0);
+  // Convert local time → UTC → UTC+7 (Vietnamese reference for lunar calendar)
+  const localOffset = getUtcOffset(year, month, day, hour, timezone);
+  const utcMs = Date.UTC(year, month - 1, day, hour - localOffset, 0, 0);
+  const refDate = new Date(utcMs + 7 * 3600000);
+  const solar = Solar.fromYmdHms(refDate.getUTCFullYear(), refDate.getUTCMonth() + 1, refDate.getUTCDate(), refDate.getUTCHours(), 0, 0);
   const lunar = solar.getLunar();
   const ec = EightChar.fromLunar(lunar);
 

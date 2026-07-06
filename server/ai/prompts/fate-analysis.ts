@@ -1,12 +1,54 @@
-export function buildFateAnalysisPrompt(name: string, dob: string, time: string, place: string, gender: string, currentYear: number = new Date().getFullYear()): string {
+export function buildFateAnalysisPrompt(
+  name: string, dob: string, time: string, place: string, gender: string,
+  computed?: {
+    numerology?: { lifePath?: number; destiny?: number; soul?: number; personality?: number; personalYear?: number };
+    astrology?: { sunSign?: string; moonSign?: string; ascendant?: string };
+    tuvi?: { cuc?: number; mingGong?: string; yearStem?: string; yearBranch?: string };
+    battu?: { dayMaster?: string; elementsPercentage?: Record<string, number>; pillars?: Record<string, string> };
+    humanDesign?: { type?: string; profile?: string; authority?: string };
+  },
+  currentYear: number = new Date().getFullYear()
+): string {
   const nextYear = currentYear + 1;
   const nextNextYear = currentYear + 2;
+  const comp = computed || {};
+
+  const pcLines: string[] = [];
+  if (comp.numerology) {
+    const n = comp.numerology;
+    const parts = [`Đường đời ${n.lifePath ?? '?'}`, `Sứ mệnh ${n.destiny ?? '?'}`, `Linh hồn ${n.soul ?? '?'}`, `Nhân cách ${n.personality ?? '?'}`];
+    pcLines.push(`- Thần số học: ${parts.join(', ')}`);
+  }
+  if (comp.astrology) {
+    const a = comp.astrology;
+    pcLines.push(`- Chiêm tinh: Mặt Trời ${a.sunSign ?? '?'}, Mặt Trăng ${a.moonSign ?? '?'}, Mọc ${a.ascendant ?? '?'}`);
+  }
+  if (comp.battu) {
+    const b = comp.battu;
+    const p = b.pillars || {};
+    pcLines.push(`- Bát Tự: Nhật chủ ${b.dayMaster ?? '?'}, Tứ trụ ${p.year ?? '?'}/${p.month ?? '?'}/${p.day ?? '?'}/${p.hour ?? '?'}`);
+    if (b.elementsPercentage) {
+      pcLines.push(`  Ngũ hành: ${JSON.stringify(b.elementsPercentage)}`);
+    }
+  }
+  if (comp.tuvi) {
+    const t = comp.tuvi;
+    pcLines.push(`- Tử Vi: Cục ${t.cuc ?? '?'}, Mệnh ${t.mingGong ?? '?'}, Năm ${t.yearStem ?? ''} ${t.yearBranch ?? ''}`);
+  }
+  if (comp.humanDesign) {
+    const h = comp.humanDesign;
+    pcLines.push(`- Human Design: ${h.type ?? '?'}, Profile ${h.profile ?? '?'}, Thẩm quyền ${h.authority ?? '?'}`);
+  }
+
   return `Hãy thực hiện một bức thư và báo cáo luận giải vận mệnh chi tiết tích hợp cả Đông và Tây cho thân chủ với thông tin sau:
 - Họ và tên: ${name}
 - Ngày sinh Dương lịch: ${dob} (định dạng YYYY-MM-DD, bạn hãy tự chuyển sang Âm lịch chuẩn xác)
 - Giờ sinh: ${time}
 - Nơi sinh: ${place}
 - Giới tính: ${gender}
+
+Dữ liệu đã được tính toán tự động (sử dụng các số liệu này làm căn cứ, KHÔNG tự ý thay đổi):
+${pcLines.length > 0 ? pcLines.join('\n') : '- Dữ liệu tính toán đang được hệ thống xử lý.'}
 
 Đặc biệt, phần thần số học (numerology) trong JSON cần chứa luận giải chi tiết tuyệt đối theo đúng ĐỀ CƯƠNG dưới đây dưới định dạng Markdown chất lượng cao cho các trường partA_Overview, partB_LifePath, partC_Destiny, partD_Ability:
 

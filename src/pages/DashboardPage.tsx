@@ -1,5 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import {
@@ -19,6 +18,7 @@ import {
   computeHumanDesign,
 } from '../computation';
 import { fetchFateReport } from '../api';
+import { saveReport, loadLatestReport } from '../lib/firestore-db';
 
 import { TabId } from '../layout/TabNavigation';
 import Header from '../layout/Header';
@@ -26,6 +26,7 @@ import Footer from '../layout/Footer';
 import TabNavigation from '../layout/TabNavigation';
 import LoadingOverlay from '../layout/LoadingOverlay';
 import ErrorBanner from '../layout/ErrorBanner';
+import LoadingSpinner from '../ui/LoadingSpinner';
 import FormInput from '../features/FormInput';
 import OverviewPanel from '../features/overview/OverviewPanel';
 
@@ -68,12 +69,16 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [isLoading]);
 
+  const recalculateRef = useRef(0);
+
   const handleRecalculate = (p: UserProfile) => {
+    const ref = ++recalculateRef.current;
+    const safeTime = p.time || '12:00';
     const n = computeNumerology(p.name, p.dob);
-    const a = computeAstrology(p.dob, p.time);
-    const t = computeTuVi(p.dob, p.time, p.gender);
-    const b = computeBattu(p.dob, p.time);
-    const h = computeHumanDesign(p.dob, p.time);
+    const a = computeAstrology(p.dob, safeTime, undefined, undefined, p.timezone);
+    const t = computeTuVi(p.dob, safeTime, p.gender, p.timezone);
+    const b = computeBattu(p.dob, safeTime, p.timezone);
+    const h = computeHumanDesign(p.dob, safeTime, p.timezone);
 
     setProfile(p);
     setNumData(n);
@@ -81,12 +86,33 @@ export default function DashboardPage() {
     setTuviData(t);
     setBattuData(b);
     setHdData(h);
+
+    const user = auth.currentUser;
+    if (user && p.profileId) {
+      loadLatestReport(user.uid, p.profileId).then(report => {
+        if (ref !== recalculateRef.current) return;
+        if (report) setAiReport(report);
+      }).catch(() => {});
+    }
   };
 
   const handleStartAnalysis = async (userProfile: UserProfile, runAi: boolean) => {
     setErrorText(null);
     setLocalLoading(true);
-    handleRecalculate(userProfile);
+
+    const safeTime = userProfile.time || '12:00';
+    const n = computeNumerology(userProfile.name, userProfile.dob);
+    const a = computeAstrology(userProfile.dob, safeTime, undefined, undefined, userProfile.timezone);
+    const t = computeTuVi(userProfile.dob, safeTime, userProfile.gender, userProfile.timezone);
+    const b = computeBattu(userProfile.dob, safeTime, userProfile.timezone);
+    const h = computeHumanDesign(userProfile.dob, safeTime, userProfile.timezone);
+
+    setProfile(userProfile);
+    setNumData(n);
+    setAstData(a);
+    setTuviData(t);
+    setBattuData(b);
+    setHdData(h);
 
     if (!runAi) {
       setAiReport(null);
@@ -98,9 +124,16 @@ export default function DashboardPage() {
     setLoadingMsgIdx(0);
 
     try {
-      const data = await fetchFateReport(userProfile);
+      const data = await fetchFateReport(userProfile, {
+        numData: n, astroData: a, tuviData: t, battuData: b, hdData: h,
+      });
       setAiReport(data);
       setActiveTab('overview');
+
+      const user = auth.currentUser;
+      if (user && userProfile.profileId) {
+        saveReport(user.uid, userProfile.profileId, userProfile, data).catch(() => {});
+      }
     } catch (e: any) {
       console.error('Fate analysis AI error:', e);
       setErrorText(e.message || 'Không thể liên lạc với máy chủ AI lúc này. Vui lòng thử lại sau.');
@@ -152,7 +185,7 @@ export default function DashboardPage() {
             />
 
             <div className={`glass-container p-6 rounded-2xl min-h-[420px] transition-opacity duration-150 ${localLoading ? 'opacity-60' : ''}`}>
-              <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-warm-amber" /></div>}>
+              <Suspense fallback={<LoadingSpinner text="Đang tải..." accentColor="amber" />}>
               {activeTab === 'overview' && (
                 <div className="space-y-8 animate-fade-in">
                   <OverviewPanel

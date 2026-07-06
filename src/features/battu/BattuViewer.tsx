@@ -16,11 +16,11 @@ interface BattuViewerProps {
 }
 
 const ELEMENT_LABELS: { [key: string]: { name: string; color: string; bg: string; text: string; desc: string } } = {
-  Kim: { name: 'Mạnh Kim (Metal)', color: 'bg-amber-400', bg: 'bg-amber-950/20', text: 'text-amber-300', desc: 'Đại diện cho sự kiên trì, cương trực, óc phân lý tuyệt vời và sắc sảo.' },
-  Mộc: { name: 'Vượng Mộc (Wood)', color: 'bg-emerald-500', bg: 'bg-emerald-950/20', text: 'text-emerald-300', desc: 'Đại diện cho tính nhân từ, tinh thần sinh sôi nảy nở vững bền.' },
-  Thủy: { name: 'Nhuận Thủy (Water)', color: 'bg-cyan-500', bg: 'bg-cyan-950/20', text: 'text-cyan-300', desc: 'Đại diện cho trí tuệ cao, sự linh hoạt uốn lượn và khả năng giao thiệp.' },
-  Hỏa: { name: 'Hừng Hỏa (Fire)', color: 'bg-rose-500', bg: 'bg-rose-950/20', text: 'text-rose-300', desc: 'Đại diện cho niềm đam mê rực cháy, tính bộc phát dũng cảm và hiếu khách.' },
-  Thổ: { name: 'Chân Thổ (Earth)', color: 'bg-orange-500', bg: 'bg-orange-950/20', text: 'text-orange-400', desc: 'Đại diện cho lòng bao dung tín cẩn, sự điềm tĩnh kiên trì dẻo dai.' },
+  Kim: { name: 'Mạnh Kim', color: 'bg-amber-400', bg: 'bg-amber-950/20', text: 'text-amber-300', desc: 'Đại diện cho sự kiên trì, cương trực, óc phân lý tuyệt vời và sắc sảo.' },
+  Mộc: { name: 'Vượng Mộc', color: 'bg-emerald-500', bg: 'bg-emerald-950/20', text: 'text-emerald-300', desc: 'Đại diện cho tính nhân từ, tinh thần sinh sôi nảy nở vững bền.' },
+  Thủy: { name: 'Nhuận Thủy', color: 'bg-cyan-500', bg: 'bg-cyan-950/20', text: 'text-cyan-300', desc: 'Đại diện cho trí tuệ cao, sự linh hoạt uốn lượn và khả năng giao thiệp.' },
+  Hỏa: { name: 'Hừng Hỏa', color: 'bg-rose-500', bg: 'bg-rose-950/20', text: 'text-rose-300', desc: 'Đại diện cho niềm đam mê rực cháy, tính bộc phát dũng cảm và hiếu khách.' },
+  Thổ: { name: 'Chân Thổ', color: 'bg-orange-500', bg: 'bg-orange-950/20', text: 'text-orange-400', desc: 'Đại diện cho lòng bao dung tín cẩn, sự điềm tĩnh kiên trì dẻo dai.' },
 };
 
 export default memo(function BattuViewer({ data, profile, aiInterpretation }: BattuViewerProps) {
@@ -47,7 +47,7 @@ export default memo(function BattuViewer({ data, profile, aiInterpretation }: Ba
         <div className="flex items-center justify-between mb-6">
           <div>
             <h4 className="font-display text-base font-bold text-warm-amber flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />Lá Số Tứ Trụ Bát Tự (4 Pillars of Destiny)
+              <Sparkles className="w-5 h-5 text-amber-400" />Lá Số Tứ Trụ Bát Tự
             </h4>
             <p className="text-xs text-white/40 mt-0.5">Xác cấu trúc Thiên Can và Địa Chi bổ trợ từ thời khắc sinh.</p>
           </div>
@@ -58,7 +58,7 @@ export default memo(function BattuViewer({ data, profile, aiInterpretation }: Ba
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-black/30 rounded-xl p-4 border border-white/5 text-center space-y-3 hover:border-white/15 transition duration-300">
-            <span className="text-[10px] text-white/40 font-mono">TRỤ NĂM (YEAR)</span>
+            <span className="text-[10px] text-white/40 font-mono">TRỤ NĂM</span>
             <div className="space-y-1">
               <h5 className="text-xl font-display font-bold text-amber-300 leading-none">{data.pillars.year.split(' ')[0]}</h5>
               <p className="text-sm font-mono text-white/60 leading-none">{data.pillars.year.split(' ')[1]}</p>
@@ -66,7 +66,7 @@ export default memo(function BattuViewer({ data, profile, aiInterpretation }: Ba
             <span className="text-[10px] text-white/30 block">Thế hệ / Tổ tiên</span>
           </div>
           <div className="bg-black/30 rounded-xl p-4 border border-white/5 text-center space-y-3 hover:border-white/15 transition duration-300">
-            <span className="text-[10px] text-white/40 font-mono">TRỤ THÁNG (MONTH)</span>
+            <span className="text-[10px] text-white/40 font-mono">TRỤ THÁNG</span>
             <div className="space-y-1">
               <h5 className="text-xl font-display font-bold text-amber-300 leading-none">{data.pillars.month.split(' ')[0]}</h5>
               <p className="text-sm font-mono text-white/60 leading-none">{data.pillars.month.split(' ')[1]}</p>
@@ -75,7 +75,7 @@ export default memo(function BattuViewer({ data, profile, aiInterpretation }: Ba
           </div>
           <div className="bg-gradient-to-b from-warm-amber/10 to-black/30 rounded-xl p-4 border-2 border-warm-amber text-center space-y-3 relative overflow-hidden shadow-lg shadow-warm-amber/10 hover:border-warm-amber transition duration-300">
             <div className="absolute top-0 right-0 bg-warm-amber text-[8px] text-white font-bold px-1.5 py-0.5 rounded-bl">NHẬT NGUYÊN</div>
-            <span className="text-[10px] text-warm-amber font-mono font-bold">TRỤ NGÀY (DAY)</span>
+            <span className="text-[10px] text-warm-amber font-mono font-bold">TRỤ NGÀY</span>
             <div className="space-y-1">
               <h5 className="text-xl font-display font-bold text-warm-amber leading-none">{data.pillars.day.split(' ')[0]}</h5>
               <p className="text-sm font-mono text-white/60 leading-none">{data.pillars.day.split(' ')[1]}</p>
@@ -83,7 +83,7 @@ export default memo(function BattuViewer({ data, profile, aiInterpretation }: Ba
             <span className="text-[10px] text-warm-amber font-bold block">Chủ thể / Thân mệnh ({data.dayMaster})</span>
           </div>
           <div className="bg-black/30 rounded-xl p-4 border border-white/5 text-center space-y-3 hover:border-white/15 transition duration-300">
-            <span className="text-[10px] text-white/40 font-mono">TRỤ GIỜ (HOUR)</span>
+            <span className="text-[10px] text-white/40 font-mono">TRỤ GIỜ</span>
             <div className="space-y-1">
               <h5 className="text-xl font-display font-bold text-amber-300 leading-none">{data.pillars.hour.split(' ')[0]}</h5>
               <p className="text-sm font-mono text-white/60 leading-none">{data.pillars.hour.split(' ')[1]}</p>
@@ -95,7 +95,7 @@ export default memo(function BattuViewer({ data, profile, aiInterpretation }: Ba
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="glass-card rounded-2xl p-6 hover:translate-y-0">
-          <h4 className="font-display text-base font-bold text-warm-amber mb-5">Biểu Đồ Sinh Khí Ngũ Hành (Energy Balance)</h4>
+          <h4 className="font-display text-base font-bold text-warm-amber mb-5">Biểu Đồ Sinh Khí Ngũ Hành</h4>
           <div className="space-y-4">
             {Object.entries(data.elementsPercentage).map(([element, percentage]) => {
               const el = ELEMENT_LABELS[element];

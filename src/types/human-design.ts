@@ -6,6 +6,14 @@ export interface HumanDesignCenter {
   color: string;
 }
 
+export interface IncarnationCross {
+  type: string;
+  personalitySun: { gate: number; line: number };
+  personalityEarth: { gate: number; line: number };
+  designSun: { gate: number; line: number };
+  designEarth: { gate: number; line: number };
+}
+
 export interface HumanDesignData {
   type: string;
   authority: string;
@@ -14,4 +22,5 @@ export interface HumanDesignData {
   centers: HumanDesignCenter[];
   activeGates: number[];
   definedChannels: string[];
+  incarnationCross?: IncarnationCross;
 }

@@ -16,6 +16,21 @@ export function removeVietnameseTones(str: string): string {
   return str.toLowerCase();
 }
 
+export function getUtcOffset(y: number, m: number, d: number, h: number, tz: string): number {
+  try {
+    const date = new Date(Date.UTC(y, m - 1, d, h, 0, 0));
+    const key = date.toLocaleString('en', { timeZone: tz, timeZoneName: 'short' });
+    const gmtMatch = key.match(/GMT([+-]\d{1,2})(?::(\d{2}))?/);
+    if (gmtMatch) {
+      const hh = parseInt(gmtMatch[1], 10);
+      const mm = gmtMatch[2] ? parseInt(gmtMatch[2], 10) : 0;
+      return hh + (hh >= 0 ? mm / 60 : -mm / 60);
+    }
+    if (key.includes('UTC') || key.includes('GMT')) return 0;
+  } catch { /* fall through */ }
+  return 7;
+}
+
 export function reduceNum(n: number, keepMaster = true): number {
   if (keepMaster && (n === 11 || n === 22 || n === 33)) return n;
   if (n < 10) return n;

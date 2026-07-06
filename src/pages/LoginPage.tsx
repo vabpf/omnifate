@@ -42,9 +42,9 @@ const features = [
     iconColor: 'text-teal-400',
   },
   {
-    title: 'Human Design',
+    title: 'Thiết Kế Nhân Dạng',
     icon: <FileText className="w-5 h-5" />,
-    desc: 'Phác thảo bản đồ BodyGraph xác định Loại năng lượng, Thẩm quyền nội tại và Chiến lược tương tác tối ưu với cuộc đời.',
+    desc: 'Phác thảo bản đồ Nhân dạng xác định Loại năng lượng, Thẩm quyền nội tại và Chiến lược tương tác tối ưu với cuộc đời.',
     bg: 'from-rose-950/30 to-black/20',
     border: 'border-rose-500/10',
     iconColor: 'text-rose-400',

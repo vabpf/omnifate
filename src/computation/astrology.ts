@@ -2,6 +2,7 @@ import { Engine } from 'caelus';
 import type { Body } from 'caelus';
 import { embeddedData } from 'caelus/data-embedded';
 import { AstrologyData, PlanetPosition, HistoricalAspect } from '../types';
+import { getUtcOffset } from './shared';
 
 const COLORS: Record<string, string> = {
   conjunction: '#EAB308', opposition: '#EF4444', trine: '#10B981',
@@ -49,12 +50,13 @@ function sIdx(sign: string): number {
 export function computeAstrology(
   dob: string, time: string,
   lat = 21.0285, lonEast = 105.8542,
+  timezone = 'Asia/Ho_Chi_Minh',
 ): AstrologyData {
   const [year, month, day] = dob.split('-').map(Number);
   const [hour, minute] = time.split(':').map(Number);
 
-  // Convert local (Vietnam UTC+7) to UT
-  const utc = new Date(Date.UTC(year, month - 1, day, hour - 7, minute, 0));
+  const offset = getUtcOffset(year, month, day, hour, timezone);
+  const utc = new Date(Date.UTC(year, month - 1, day, hour - offset, minute, 0));
   const chart = getEngine().chart(
     utc.getUTCFullYear(), utc.getUTCMonth() + 1, utc.getUTCDate(),
     utc.getUTCHours(), utc.getUTCMinutes(), 0,
@@ -84,11 +86,20 @@ export function computeAstrology(
     const n2 = BODY_META[asp.b]?.name || asp.b;
     const t = ASPECT_MAP[asp.aspect];
     if (!t) continue;
+    const p1 = planets.find(p => p.name === n1);
+    const p2 = planets.find(p => p.name === n2);
+    let angle = 0;
+    if (p1 && p2) {
+      const deg1 = sIdx(p1.sign) * 30 + p1.degree;
+      const deg2 = sIdx(p2.sign) * 30 + p2.degree;
+      const diff = Math.abs(deg1 - deg2);
+      angle = Math.min(diff, 360 - diff);
+    }
     aspects.push({
       planet1: n1,
       planet2: n2,
       type: t as HistoricalAspect['type'],
-      angle: Math.round(asp.orb >= 0 ? 0 : 0),
+      angle,
       color: COLORS[asp.aspect] || '#AAA',
     });
   }
@@ -97,17 +108,6 @@ export function computeAstrology(
   const moonBody = bodies.moon;
   const moonSign = moonBody ? VI_SIGNS[sIdx(moonBody.sign)] : sunSign;
   const ascSign = VI_SIGNS[Math.floor(chart.angles.asc / 30) % 12];
-
-  aspects.forEach((a, i) => {
-    const p1 = planets.find(p => p.name === a.planet1);
-    const p2 = planets.find(p => p.name === a.planet2);
-    if (!p1 || !p2) return;
-    const deg1 = sIdx(p1.sign) * 30 + p1.degree;
-    const deg2 = sIdx(p2.sign) * 30 + p2.degree;
-    const diff = Math.abs(deg1 - deg2);
-    const angle = Math.min(diff, 360 - diff);
-    aspects[i] = { ...a, angle };
-  });
 
   return {
     sunSign: sunSign,
